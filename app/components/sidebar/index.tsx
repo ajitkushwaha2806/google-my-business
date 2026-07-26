@@ -5,7 +5,7 @@ import { NavMain } from "./nav-main"
 import { TeamSwitcher } from "./nav-switcher"
 import { useUser } from "@/store/hooks/useUser"
 import { APP_SIDEBAR_CONFIG } from "@/constants/sidebar"
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail, SidebarSeparator } from "@/components/ui/sidebar"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail, SidebarSeparator, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar"
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     const { user: userData, isLoaded } = useUser();
@@ -21,11 +21,12 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     return (
         <Sidebar collapsible="icon" {...props} className="bg-sidebar">
             <SidebarHeader>
-                <TeamSwitcher
-                    title={APP_SIDEBAR_CONFIG?.switcherTitle}
-                    addLabel={APP_SIDEBAR_CONFIG?.switcherAddLabel}
-                    businesses={APP_SIDEBAR_CONFIG?.businesses}
-                />
+                <div className="mt-2">
+                    <TeamSwitcher
+                        title={APP_SIDEBAR_CONFIG?.switcherTitle}
+                        addLabel={APP_SIDEBAR_CONFIG?.switcherAddLabel}
+                    />
+                </div>
             </SidebarHeader>
             <SidebarContent>
                 <NavMain title={APP_SIDEBAR_CONFIG?.navMain?.title} items={APP_SIDEBAR_CONFIG?.navMain?.items} />

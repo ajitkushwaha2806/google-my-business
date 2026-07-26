@@ -3,9 +3,8 @@ import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Providers } from "@/provider";
 import { fontPoppins } from "./constants/fonts";
-import { AppSidebar } from "./components/sidebar";
 import { appMetadata } from "@/constants/metadata";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarLayout } from "./components/sidebar/sidebar-layout";
 
 export const metadata: Metadata = appMetadata;
 
@@ -21,14 +20,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     >
       <body className="min-h-screen bg-background text-foreground">
         <Providers>
-          <SidebarProvider>
-            <div className="flex min-h-screen">
-              <AppSidebar />
-              <SidebarInset className="flex-1 overflow-hidden">
-                {children}
-              </SidebarInset>
-            </div>
-          </SidebarProvider>
+          <SidebarLayout>
+            {children}
+          </SidebarLayout>
         </Providers>
       </body>
     </html>

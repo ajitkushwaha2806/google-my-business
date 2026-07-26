@@ -14,24 +14,7 @@ export const APP_SIDEBAR_CONFIG = {
         },
     ],
     switcherTitle: "Businesses",
-    switcherAddLabel: "Add business",
-    businesses: [
-        {
-            name: "Acme Inc",
-            logo: <GalleryVerticalEndIcon />,
-            address: "New York, NY",
-        },
-        {
-            name: "Acme Corp.",
-            logo: <AudioLinesIcon />,
-            address: "San Francisco, CA",
-        },
-        {
-            name: "Evil Corp.",
-            logo: <GalleryVerticalEndIcon />,
-            address: "Free",
-        },
-    ],
+    switcherAddLabel: "Add Google Account",
     navMain: {
         title: "Your Google listings",
         items: [
