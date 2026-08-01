@@ -1,5 +1,4 @@
 "use client";
-import * as React from "react";
 import { NavUser } from "./nav-user";
 import { NavMain } from "./nav-main";
 import { useUser } from "@/store/hooks/useUser";
@@ -12,6 +11,7 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
+import RestaurantSwitcher from "../global/restaurant-switcher";
 
 export function AppSidebar(props) {
   const { user: userData, isLoaded } = useUser();
@@ -27,8 +27,8 @@ export function AppSidebar(props) {
   return (
     <Sidebar collapsible="icon" {...props} className="bg-sidebar">
       <SidebarHeader>
-        <div className="mt-2">
-          <img src="/assets/nearby-5.png" alt="Logo" className="w-auto" />
+        <div>
+          <RestaurantSwitcher />
         </div>
       </SidebarHeader>
       <SidebarContent>

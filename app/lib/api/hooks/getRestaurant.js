@@ -1,36 +1,39 @@
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { getUser } from './getUser';
+import Restaurant from '@/models/Restaurant';
 
-export async function getRestaurantContext() {
+export async function getRestaurant() {
   try {
-    const { user } = await auth();
+    const user = await getUser();
+    console.log("user" , user)
 
-    if (!userId) {
-      return { user: null, restaurant: null, error: 'Unauthorized' };
+    if (!user || !user.id) {
+      throw new Error('Please login to continue.');
     }
 
-    const clerkUser = await currentUser();
-    const userDetails = {
-      id: userId,
-      email: clerkUser?.emailAddresses[0]?.emailAddress || '',
-      name: `${clerkUser?.firstName || ''} ${clerkUser?.lastName || ''}`.trim(),
-    };
+    const restaurantDetails = await Restaurant.findOne({
+      createdBy: user.id,
+    }).lean();
 
-    const mockRestaurant = { id: 'rest_999', name: 'Bento Express', slug: 'bento-express' };
-
-    if (!mockRestaurant) {
-      return { user: userDetails, restaurant: null, error: 'No restaurant linked to this account' };
+    if (!restaurantDetails) {
+      throw new Error('No restaurant linked with this user.');
     }
+
+    console.log("restaurantDetails" , restaurantDetails)
 
     return {
-      user: userDetails,
-      restaurant: mockRestaurant,
+      user: user,
+      restaurant: restaurantDetails,
       error: null,
     };
+
   } catch (err) {
     return {
       user: null,
       restaurant: null,
-      error: err.message || 'Failed to fetch restaurant context',
+      error:
+        err instanceof Error
+          ? err.message
+          : 'Failed to fetch Restaurant Details',
     };
   }
 }

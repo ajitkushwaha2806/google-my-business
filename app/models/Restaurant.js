@@ -32,35 +32,34 @@ const RestaurantSchema = new Schema(
     address: {
       street: {
         type: String,
-        required: true,
         trim: true,
         maxlength: 200,
+        default: "",
       },
 
       city: {
         type: String,
-        required: true,
         trim: true,
         maxlength: 100,
+        default: "",
       },
 
       state: {
         type: String,
-        required: true,
         trim: true,
         maxlength: 100,
+        default: "",
       },
 
       postalCode: {
         type: String,
-        required: true,
         trim: true,
         maxlength: 20,
+        default: "",
       },
 
       country: {
         type: String,
-        required: true,
         uppercase: true,
         trim: true,
         default: "IN",
@@ -71,8 +70,7 @@ const RestaurantSchema = new Schema(
       location: {
         type: {
           type: String,
-          enum: ["Point"],
-          default: "Point",
+          enum: ["Point"]
         },
 
         coordinates: {
@@ -129,49 +127,46 @@ const RestaurantSchema = new Schema(
       index: true,
     },
 
-    isOpen: {
-      type: Boolean,
-      default: true,
+    openingHours: {
+      currentlyOpen: {
+        type: Boolean,
+        default: true,
+      },
+      days: [
+        {
+          day: {
+            type: String,
+            required: true,
+            enum: [
+              "monday",
+              "tuesday",
+              "wednesday",
+              "thursday",
+              "friday",
+              "saturday",
+              "sunday",
+            ],
+          },
+          isOpen: {
+            type: Boolean,
+            default: true,
+          },
+          openTime: {
+            type: String,
+            default: null,
+            match: [/^([01]\d|2[0-3]):[0-5]\d$/, "Time must use HH:mm format"],
+          },
+          closeTime: {
+            type: String,
+            default: null,
+            match: [/^([01]\d|2[0-3]):[0-5]\d$/, "Time must use HH:mm format"],
+          },
+        },
+      ],
     },
 
-    openingHours: [
-      {
-        day: {
-          type: String,
-          required: true,
-          enum: [
-            "monday",
-            "tuesday",
-            "wednesday",
-            "thursday",
-            "friday",
-            "saturday",
-            "sunday",
-          ],
-        },
-
-        isOpen: {
-          type: Boolean,
-          default: true,
-        },
-
-        openTime: {
-          type: String,
-          default: null,
-          match: [/^([01]\d|2[0-3]):[0-5]\d$/, "Time must use HH:mm format"],
-        },
-
-        closeTime: {
-          type: String,
-          default: null,
-          match: [/^([01]\d|2[0-3]):[0-5]\d$/, "Time must use HH:mm format"],
-        },
-      },
-    ],
-
     createdBy: {
-      type: Types.ObjectId,
-      ref: "User",
+      type: String,
       required: true,
       immutable: true,
       index: true,
@@ -198,4 +193,4 @@ const RestaurantSchema = new Schema(
 
 RestaurantSchema.index({ "address.location": "2dsphere" });
 RestaurantSchema.index({ name: "text" });
-export default mongoose.model("Restaurant", RestaurantSchema);
+export default mongoose.models.Restaurant || mongoose.model("Restaurant", RestaurantSchema);
