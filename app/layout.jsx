@@ -1,9 +1,8 @@
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/provider";
-import { fontPoppins } from "./constants/fonts";
+import { fontPoppins } from "@/constants/fonts";
 import { appMetadata } from "@/constants/metadata";
-import { SidebarLayout } from "./components/sidebar/layout";
 
 export const metadata = appMetadata;
 
@@ -16,7 +15,7 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-screen bg-background text-foreground">
         <Providers>
-          <SidebarLayout>{children}</SidebarLayout>
+          {children}
         </Providers>
       </body>
     </html>

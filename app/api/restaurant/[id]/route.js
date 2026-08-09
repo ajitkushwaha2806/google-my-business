@@ -4,7 +4,7 @@ import { JsonResponse } from "@/lib/api/responseHandler";
 import { getRestaurant } from "@/lib/api/hooks/getRestaurant";
 
 const ALLOWED_UPDATE_FIELDS = [
-    "name", "slug", "logo", "address", "phone", 
+    "name", "slug", "logo", "address", "phone", "domain",
     "email", "gstNumber", "currency", "status", 
     "openingHours"
 ];
@@ -20,10 +20,6 @@ export const PUT = async (req, { params }) => {
         if (!user || !restaurant) {
             return JsonResponse.error("Please login first to continue!", 401);
         }
-
-        // if (restaurant._id.toString() !== id) {
-        //     return JsonResponse.error("You are not authorized to update this restaurant.", 403);
-        // }
     
         const updateData = {};
         
@@ -64,12 +60,11 @@ export const PUT = async (req, { params }) => {
 };
 
 export const GET = async (req, { params }) => {
+    console.log("HIT /api/restaurant/[id] with params:", params);
     try {
         const { id } = await params;
         await dbConnect();    
         const { user, restaurant } = await getRestaurant();
-        console.log("user" , user)
-        console.log("restaurant" , restaurant)
 
         
         if (!user || !restaurant) {
@@ -77,6 +72,7 @@ export const GET = async (req, { params }) => {
         }
 
         const restaurantDetails = await Restaurant.findById(id);
+        console.log("restaurantDetails" , restaurantDetails)
 
         if (!restaurantDetails) {
             return JsonResponse.error("Restaurant not found.", 404);

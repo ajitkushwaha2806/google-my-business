@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { UploadService } from "@/services/upload";
-import { RestaurantService } from "@/services/restaurant";
+import { UploadService } from "@/services/frontend/upload";
+import { RestaurantService } from "@/services/frontend/restaurant";
 import { useRestaurant } from "@/store/hooks/useRestaurant";
 import useNotification from "@/store/hooks/useNotification";
 import { useFormMutation } from "@/store/hooks/useFormMutation";
@@ -14,6 +14,8 @@ import { Store, Link2, Phone, Mail, Image as ImageIcon, Save, Loader2, Upload } 
 const GeneralTab = ({ generalData }) => {
   const { restaurantId } = useRestaurant();
   const notification = useNotification();
+
+  console.log("generalData" , generalData)
   
   const { mutate, isPending } = useFormMutation({
     mutationFn: (data) => RestaurantService.updateRestaurant(restaurantId, data),
@@ -28,6 +30,7 @@ const GeneralTab = ({ generalData }) => {
       logo: generalData?.logo || "",
       name: generalData?.name || "",
       slug: generalData?.slug || "",
+      domain: generalData?.domain || "",
       phone: generalData?.phone || "",
       email: generalData?.email || "",
     },
@@ -184,6 +187,26 @@ const GeneralTab = ({ generalData }) => {
                 onBlur={formik.handleBlur}
                 required 
                 placeholder="contact@therusticspoon.com" 
+                className="border-0 focus-visible:ring-0 shadow-none h-12 bg-transparent text-base px-3 w-full" 
+              />
+            </div>
+          </div>
+
+          <div className="relative group">
+            <div className="absolute -top-2.5 left-3 px-1.5 bg-white dark:bg-background z-10">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 group-focus-within:text-orange-600 transition-colors">Custom Domain</span>
+            </div>
+            <div className="relative flex items-center border border-gray-300 dark:border-gray-700 rounded-md focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all bg-white dark:bg-zinc-900/50">
+              <div className="pl-3.5 flex items-center pointer-events-none">
+                <Link2 className="h-5 w-5 text-orange-500" />
+              </div>
+              <Input 
+                id="domain" 
+                name="domain"
+                value={formik.values.domain} 
+                onChange={formik.handleChange} 
+                onBlur={formik.handleBlur}
+                placeholder="e.g. therusticspoon.com" 
                 className="border-0 focus-visible:ring-0 shadow-none h-12 bg-transparent text-base px-3 w-full" 
               />
             </div>

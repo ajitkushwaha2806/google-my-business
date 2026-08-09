@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { RestaurantService } from "@/services/restaurant";
+import { RestaurantService } from "@/services/frontend/restaurant";
 import { useRestaurant } from "@/store/hooks/useRestaurant";
 import { useFormMutation } from "@/store/hooks/useFormMutation";
 import { Save, Power, Loader2, Sunrise, Sunset, CalendarDays } from "lucide-react";

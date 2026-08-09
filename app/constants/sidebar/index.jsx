@@ -1,4 +1,4 @@
-import { LayoutDashboard, Store } from "lucide-react";
+import { LayoutDashboard, Settings, Store, User } from "lucide-react";
 
 export const APP_SIDEBAR_CONFIG = {
   navUserItems: [
@@ -18,13 +18,18 @@ export const APP_SIDEBAR_CONFIG = {
     items: [
       {
         title: "Menu",
-        url: "/menu-management",
+        url: "/restaurant/menu",
         icon: <LayoutDashboard />,
       },
+       {
+        title: "User Management",
+        url: "/restaurant/users",
+        icon: <User />,
+      },
       {
-        title: "Profile",
+        title: "Settings",
         url: "/restaurant/profile",
-        icon: <Store />,
+        icon: <Settings />,
       },
       //   {
       //     title: 'Content & Reviews',

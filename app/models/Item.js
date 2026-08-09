@@ -1,7 +1,7 @@
 import mongoose, { Schema, Types } from "mongoose";
 
 const VariantOptionSchema = new Schema({
-  option_name: {
+  name: {
     type: String,
     required: [true, "Option name is required (e.g., Regular)"],
     trim: true,
@@ -14,7 +14,7 @@ const VariantOptionSchema = new Schema({
 });
 
 const VariantSchema = new Schema({
-  variant_name: {
+  property_name: {
     type: String,
     required: [true, "Variant name is required (e.g., Size)"],
     trim: true,
@@ -77,7 +77,7 @@ const MenuItemSchema = new Schema(
   },
 );
 
-MenuItemSchema.pre("validate", function (next) {
+MenuItemSchema.pre("validate", function () {
   if (this.variants && this.variants.length > 0) {
     let lowestPrice = Infinity;
     this.variants.forEach((variant) => {
@@ -92,9 +92,7 @@ MenuItemSchema.pre("validate", function (next) {
       this.base_price = lowestPrice;
     }
   }
-
-  next();
 });
 
 MenuItemSchema.index({ restaurant: 1, category: 1, displayOrder: 1 });
-export default mongoose.model("MenuItem", MenuItemSchema);
+export default mongoose.models.MenuItem || mongoose.model("MenuItem", MenuItemSchema);

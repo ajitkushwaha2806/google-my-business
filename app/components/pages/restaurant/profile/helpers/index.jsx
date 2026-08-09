@@ -20,6 +20,7 @@ export const renderTabContent = (activeTab, data) => {
     slug: resData?.slug || "",
     phone: resData?.phone || "",
     email: resData?.email || "",
+    domain : resData?.domain || ""
   };
 
   const locationTab = resData?.address || {};

@@ -37,3 +37,28 @@ export async function getRestaurant() {
     };
   }
 }
+
+export async function getRestaurantFromSlug(slug) {
+  console.log("slugg" , slug)
+  try {
+    const restaurant = await Restaurant.findOne({ slug }).lean();
+    console.log("restaurant" , restaurant)
+
+    if (!restaurant) {
+      throw new Error("No restaurant found with this slug.");
+    }
+
+    return {
+      restaurant,
+      error: null,
+    };
+  } catch (err) {
+    return {
+      restaurant: null,
+      error:
+        err instanceof Error
+          ? err.message
+          : "Failed to fetch restaurant details.",
+    };
+  }
+}

@@ -29,6 +29,12 @@ const RestaurantSchema = new Schema(
       default: null,
     },
 
+    domain: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
     address: {
       street: {
         type: String,

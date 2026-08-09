@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-const isPublicRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
+const isPublicRoute = createRouteMatcher([
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/api/:slug(.*)",      
+  // Allow all root-level dynamic slugs (like /[tenant]) except dashboard routes
+  "/((?!restaurant|api|sign-in|sign-up|_next).*)"
+]);
 
 export default clerkMiddleware(async (auth, req) => {
   if (isPublicRoute(req)) return;
@@ -9,7 +15,6 @@ export default clerkMiddleware(async (auth, req) => {
 
   const { sessionClaims } = await auth();
   const restaurants = sessionClaims?.publicMetadata?.restaurants || [];
-  console.log("restaurants" , restaurants)
 
   const isOnboardingPage = req.nextUrl.pathname.startsWith("/restaurant/onboarding");
   const isApiRoute = req.nextUrl.pathname.startsWith("/api");

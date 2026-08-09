@@ -1,6 +1,6 @@
 "use client"
 import { useQuery } from "@tanstack/react-query"
-import { RestaurantService } from "@/services/restaurant"
+import { RestaurantService } from "@/services/frontend/restaurant"
 import { useRestaurant } from "@/store/hooks/useRestaurant"
 import ProfilePage from "@/components/pages/restaurant/profile"
 

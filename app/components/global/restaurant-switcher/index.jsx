@@ -5,7 +5,7 @@ import RestaurantImage from "./fragments/image-card";
 import { useSidebar } from "@/components/ui/sidebar";
 import EmptyState from "./fragments/states/empty-state";
 import ErrorState from "./fragments/states/error-state";
-import { RestaurantService } from "@/services/restaurant";
+import { RestaurantService } from "@/services/frontend/restaurant";
 import LoadingState from "./fragments/states/loading-state";
 import { useRestaurant } from "@/store/hooks/useRestaurant";
 import { Check, ChevronsUpDown, Search, Settings, Building2 } from "lucide-react";

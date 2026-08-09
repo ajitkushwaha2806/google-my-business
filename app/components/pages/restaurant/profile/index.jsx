@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { renderTabContent, TABS } from "./helpers";
 import { CustomTabs } from "@/components/ui/custom-tabs";
-import { RestaurantService } from "@/services/restaurant";
+import { RestaurantService } from "@/services/frontend/restaurant";
 import { useRestaurant } from "@/store/hooks/useRestaurant";
 
 const ProfilePage = () => {

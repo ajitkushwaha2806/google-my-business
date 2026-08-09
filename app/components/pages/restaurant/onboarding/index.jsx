@@ -6,7 +6,7 @@ import { useUser } from "@/store/hooks/useUser";
 import { Button } from "@/components/ui/button";
 import { generateSlug } from "@/lib/client/helper";
 import { onboardingValidationSchema } from "./helper";
-import { RestaurantService } from "@/services/restaurant";
+import { RestaurantService } from "@/services/frontend/restaurant";
 import useNotification from "@/store/hooks/useNotification";
 import { Store, Link2, Phone, Mail, ArrowRight, CheckCircle2 } from "lucide-react";
 

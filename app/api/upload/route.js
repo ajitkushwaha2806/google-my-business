@@ -1,5 +1,5 @@
 import { getUser } from "@/lib/api/hooks/getUser";
-import { uploadToS3 } from "@/app/services/s3";
+import { uploadToS3 } from "@/services/backend/s3";
 import { JsonResponse } from "@/lib/api/responseHandler";
 
 export const POST = async (req) => {

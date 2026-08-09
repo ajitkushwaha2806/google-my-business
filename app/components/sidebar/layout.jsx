@@ -6,15 +6,6 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 
 export function SidebarLayout({ children }) {
   const pathname = usePathname();
-  const isAuthPage =
-    pathname?.startsWith("/sign-in") || pathname?.startsWith("/sign-up") || pathname?.startsWith("/restaurant/onboarding");
-
-  if (isAuthPage) {
-    return (
-      <main className="flex min-h-screen w-full flex-col">{children}</main>
-    );
-  }
-
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-gray-50/30 dark:bg-zinc-950">

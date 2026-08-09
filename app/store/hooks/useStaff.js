@@ -1,0 +1,62 @@
+import { useMemo } from "react";
+import { StaffService } from "@/services/frontend/staff";
+import useNotification from "./useNotification";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+export const useStaff = (resId) => {
+    const queryClient = useQueryClient();
+    const notification = useNotification();
+
+    const { data: staffData, isLoading, error } = useQuery({
+        queryKey: ["staff", resId],
+        queryFn: () => StaffService.getAll(resId),
+        enabled: !!resId,
+    });
+
+    const createMutation = useMutation({
+        mutationFn: (data) => StaffService.create(resId, data),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ["staff", resId] });
+            notification.success(data?.message || "Staff member created successfully", { duration: 3000 });
+        },
+        onError: (err) => {
+            notification.error(err.response?.data?.message || err.message || "Failed to create staff member", { duration: 3000 });
+        },
+    });
+
+    const updateMutation = useMutation({
+        mutationFn: ({ staffId, data }) => StaffService.update(resId, staffId, data),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ["staff", resId] });
+            notification.success(data?.message || "Staff member updated successfully", { duration: 3000 });
+        },
+        onError: (err) => {
+            notification.error(err.response?.data?.message || err.message || "Failed to update staff member", { duration: 3000 });
+        },
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: (staffId) => StaffService.delete(resId, staffId),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ["staff", resId] });
+            notification.success(data?.message || "Staff member deleted successfully", { duration: 3000 });
+        },
+        onError: (err) => {
+            notification.error(err.response?.data?.message || err.message || "Failed to delete staff member", { duration: 3000 });
+        },
+    });
+
+    const rawStaff = staffData?.data || [];
+
+    return {
+        staffList: rawStaff,
+        isLoading,
+        error,
+        addStaff: createMutation.mutate,
+        isAdding: createMutation.isPending,
+        updateStaff: updateMutation.mutate,
+        isUpdating: updateMutation.isPending,
+        deleteStaff: deleteMutation.mutate,
+        isDeleting: deleteMutation.isPending,
+    };
+};
