@@ -5,7 +5,9 @@ import { JsonResponse } from "@/lib/api/responseHandler";
 
 export const GET = async (req, { params }) => {
   try {
+
     const { slug } = await params;
+    console.log("slug", slug);
 
     if (!slug) {
       return JsonResponse.error(

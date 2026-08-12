@@ -56,7 +56,7 @@ export function CategoryStrip({ categories = [], isLoading, error, activeCategor
 
       <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-zinc-800 shadow-sm overflow-hidden relative">
         {error ? (
-          <ErrorState message={error} />
+          <ErrorState message={error?.message || (typeof error === 'string' ? error : "An error occurred while loading categories.")} />
         ) : !isLoading && categories.length === 0 ? (
           <EmptyCategories />
         ) : (

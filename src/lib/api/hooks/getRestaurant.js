@@ -4,8 +4,6 @@ import Restaurant from '@/models/Restaurant';
 export async function getRestaurant() {
   try {
     const user = await getUser();
-    console.log("user" , user)
-
     if (!user || !user.id) {
       throw new Error('Please login to continue.');
     }
@@ -39,10 +37,8 @@ export async function getRestaurant() {
 }
 
 export async function getRestaurantFromSlug(slug) {
-  console.log("slugg" , slug)
   try {
     const restaurant = await Restaurant.findOne({ slug }).lean();
-    console.log("restaurant" , restaurant)
 
     if (!restaurant) {
       throw new Error("No restaurant found with this slug.");

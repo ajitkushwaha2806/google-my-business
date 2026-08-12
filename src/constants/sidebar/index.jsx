@@ -27,6 +27,37 @@ export const APP_SIDEBAR_CONFIG = {
         icon: <User />,
       },
       {
+        title: "Website Settings",
+        icon: <Store />,
+        items: [
+          {
+            title: "Homepage",
+            url: "/restaurant/website/homepage",
+            icon: <LayoutDashboard />,
+          },
+          {
+            title: "Menu Page",
+            url: "/restaurant/website/menu-page",
+            icon: <LayoutDashboard />,
+          },
+          {
+            title: "About Us Page",
+            url: "/restaurant/website/about-us-page",
+            icon: <LayoutDashboard />,
+          },
+          {
+            title: "Contact Page",
+            url: "/restaurant/website/contact-page",
+            icon: <LayoutDashboard />,
+          },
+          {
+            title: "Footer",
+            url: "/restaurant/website/footer",
+            icon: <LayoutDashboard />,
+          },
+        ]
+      },
+      {
         title: "Settings",
         url: "/restaurant/profile",
         icon: <Settings />,

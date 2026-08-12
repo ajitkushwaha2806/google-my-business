@@ -5,7 +5,6 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/api/:slug(.*)",      
-  // Allow all root-level dynamic slugs (like /[tenant]) except dashboard routes
   "/((?!restaurant|api|sign-in|sign-up|_next).*)"
 ]);
 
