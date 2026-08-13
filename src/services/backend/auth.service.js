@@ -76,4 +76,43 @@ export class AuthService {
 
         return { token };
     }
+
+    static async me(slug, token) {
+        if (!token) {
+            throw new Error("No token provided");
+        }
+        await dbConnect();
+
+        const { restaurant, error } = await getRestaurantFromSlug(slug);
+        if (error || !restaurant) {
+            throw new Error(error || "Restaurant not found!");
+        }
+
+        let decoded;
+        try {
+            decoded = jwt.verify(token, JWT_SECRET);
+        } catch (err) {
+            throw new Error("Invalid token");
+        }
+
+        const user = await User.findOne({ _id: decoded.userId, restaurant: restaurant._id });
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        if (user.status !== "ACTIVE") {
+            throw new Error(`Your account is ${user.status.toLowerCase()}`);
+        }
+
+        return {
+            _id: user._id,
+            name: user.name,
+            phone: user.phone,
+            restaurant: user.restaurant,
+            status: user.status,
+            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=" + user.phone,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+        };
+    }
 }
