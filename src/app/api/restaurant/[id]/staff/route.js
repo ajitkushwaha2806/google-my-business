@@ -3,7 +3,7 @@ import * as argon2 from "argon2";
 import { Staff } from "@/models/Staff";
 import Restaurant from "@/models/Restaurant";
 import { JsonResponse } from "@/lib/api/responseHandler";
-import { validateRequiredFields } from "@/lib/api/helpers";
+import { validateRequiredFields } from "@/lib/api/helpers/validator";
 
 const STAFF_POST_REQUIRED_FIELDS = ["name", "email", "role", "password"];
 
@@ -49,7 +49,12 @@ export const POST = async (req, { params }) => {
             return JsonResponse.error("A user with this email already exists", 400);
         }
         
-        const passwordHash = await argon2.hash(password);
+        const passwordHash = await argon2.hash(password, {
+            type: argon2.argon2id,
+            memoryCost: 2 ** 14,
+            timeCost: 2,
+            parallelism: 1
+        });
         
         let finalImage = image;
         if (!finalImage) {

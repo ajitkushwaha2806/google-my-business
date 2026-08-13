@@ -21,6 +21,7 @@
     "formik": "^2.4.9",
     "framer-motion": "^12.43.0",
     "googleapis": "^173.0.0",
+    "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.26.0",
     "mongoose": "^9.9.1",
     "next": "16.2.10",

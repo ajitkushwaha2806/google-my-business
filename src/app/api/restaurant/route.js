@@ -3,7 +3,7 @@ import Restaurant from "@/models/Restaurant";
 import { getUser } from "@/lib/api/hooks/getUser";
 import { clerkClient } from "@clerk/nextjs/server";
 import { JsonResponse } from "@/lib/api/responseHandler";
-import { validateRequiredFields } from "@/lib/api/helpers";
+import { validateRequiredFields } from "@/lib/api/helpers/validator";
 
 const RESTAURANT_POST_REQUIRED_FIELDS = ["name", "phone", "email", "slug"];
 

@@ -4,7 +4,7 @@ import Category from "@/models/Category";
 import Restaurant from "@/models/Restaurant";
 import { getUser } from "@/lib/api/hooks/getUser";
 import { JsonResponse } from "@/lib/api/responseHandler";
-import { validateRequiredFields } from "@/lib/api/helpers";
+import { validateRequiredFields } from "@/lib/api/helpers/validator";
 
 const MENU_ITEM_POST_REQUIRED_FIELDS = ["category", "name", "base_price", "dietaryType"];
 

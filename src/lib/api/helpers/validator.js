@@ -1,4 +1,3 @@
-
 export const validateRequiredFields  = (data, requiredFields = []) => {
   if (!data || typeof data !== "object" || Array.isArray(data)) {
     return {

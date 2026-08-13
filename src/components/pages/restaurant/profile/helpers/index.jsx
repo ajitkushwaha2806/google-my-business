@@ -10,7 +10,7 @@ export const TABS = [
     { id: "settings", label: "System Settings", activeColor: "border-orange-500 text-orange-600" },
   ];
 
-export const renderTabContent = (activeTab, data) => {
+export const    renderTabContent = (activeTab, data) => {
 
   const resData = data?.data || {};
 
