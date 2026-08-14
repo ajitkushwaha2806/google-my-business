@@ -55,18 +55,19 @@ export class MenuSearchService {
                 }
             };
 
+            const pipeline = [
+                searchStage
+            ];
+
             if (isVegFilter) {
-                searchStage.$search.compound.filter.push({
-                    text: {
-                        query: ["veg", "vegan"],
-                        path: "dietaryType"
+                pipeline.push({
+                    $match: {
+                        dietaryType: { $in: ["veg"] }
                     }
                 });
             }
 
-            const pipeline = [
-                searchStage,
-                {
+            pipeline.push({
                     $facet: {
                         results: [
                             { $skip: (page - 1) * limit },
