@@ -1,7 +1,7 @@
+import jwt from "jsonwebtoken";
+import * as argon2 from "argon2";
 import dbConnect from "@/lib/db";
 import { User } from "@/models/User";
-import * as argon2 from "argon2";
-import jwt from "jsonwebtoken";
 import { getRestaurantFromSlug } from "@/lib/api/hooks/getRestaurant";
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -33,6 +33,7 @@ export class AuthService {
             name,
             phone,
             passwordHash,
+            image: restaurant.logo || null,
             restaurant: restaurant._id
         });
 

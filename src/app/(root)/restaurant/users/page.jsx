@@ -1,8 +1,8 @@
-import StaffManagement from "@/components/pages/restaurant/staff"
+import UserManagement from "@/components/pages/restaurant/users"
 
 const Page = () => {
     return (
-        <StaffManagement />
+        <UserManagement />
     )
 }
 
