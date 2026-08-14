@@ -6,7 +6,7 @@ import { getRestaurantFromSlug } from "@/lib/api/hooks/getRestaurant";
 export class MenuSearchService {
     static async search(slug, { query = "", isVeg = false, page = 1, limit = 10 }) {
         await dbConnect();
-        
+
         const { restaurant, error } = await getRestaurantFromSlug(slug);
         if (error || !restaurant) {
             throw new Error(error || "Restaurant not found");
@@ -68,40 +68,40 @@ export class MenuSearchService {
             }
 
             pipeline.push({
-                    $facet: {
-                        results: [
-                            { $skip: (page - 1) * limit },
-                            { $limit: limit },
-                            {
-                                $lookup: {
-                                    from: "categories",
-                                    localField: "category",
-                                    foreignField: "_id",
-                                    as: "category"
-                                }
-                            },
-                            { $unwind: { path: "$category", preserveNullAndEmptyArrays: true } },
-                            {
-                                $lookup: {
-                                    from: "categories",
-                                    localField: "subCategory",
-                                    foreignField: "_id",
-                                    as: "subCategory"
-                                }
-                            },
-                            { $unwind: { path: "$subCategory", preserveNullAndEmptyArrays: true } }
-                        ],
-                        meta: [
-                            {
-                                $replaceWith: "$$SEARCH_META"
-                            },
-                            {
-                                $limit: 1
+                $facet: {
+                    results: [
+                        { $skip: (page - 1) * limit },
+                        { $limit: limit },
+                        {
+                            $lookup: {
+                                from: "categories",
+                                localField: "category",
+                                foreignField: "_id",
+                                as: "category"
                             }
-                        ]
-                    }
+                        },
+                        { $unwind: { path: "$category", preserveNullAndEmptyArrays: true } },
+                        {
+                            $lookup: {
+                                from: "categories",
+                                localField: "subCategory",
+                                foreignField: "_id",
+                                as: "subCategory"
+                            }
+                        },
+                        { $unwind: { path: "$subCategory", preserveNullAndEmptyArrays: true } }
+                    ],
+                    meta: [
+                        {
+                            $replaceWith: "$$SEARCH_META"
+                        },
+                        {
+                            $limit: 1
+                        }
+                    ]
                 }
-            ];
+            })
+
 
             try {
                 const aggregationResults = await MenuItem.aggregate(pipeline);
@@ -111,7 +111,7 @@ export class MenuSearchService {
                 totalResults = facetResult?.meta?.[0]?.count?.total || 0;
             } catch (searchError) {
                 console.warn("Atlas Search failed or not configured, falling back to regex search:", searchError.message);
-                
+
                 const fallbackFilter = {
                     restaurant: restaurant._id,
                     isAvailable: true,
