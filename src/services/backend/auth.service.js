@@ -111,7 +111,7 @@ export class AuthService {
             phone: user.phone,
             restaurant: user.restaurant,
             status: user.status,
-            avatar: user.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + user.phone,
+            avatar: user.image || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + user.phone,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt
         };
