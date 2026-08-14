@@ -2,14 +2,14 @@
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
-import { User, Loader2, Eye, EyeOff, Key } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUsers } from "@/store/hooks/useUsers";
+import { UploadService } from "@/services/frontend/upload";
 import { useRestaurant } from "@/store/hooks/useRestaurant";
 import useNotification from "@/store/hooks/useNotification";
+import { User, Loader2, Eye, EyeOff, Key, Phone, Lock } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { AvatarUpload } from "@/components/pages/restaurant/staff/framents/staff-form/fragments/AvatarUpload";
-import { UploadService } from "@/services/frontend/upload";
+import { AvatarUpload } from "@/components/pages/restaurant/staff/framents/staff-form/fragments/AvatarUpload"
 
 const getValidationSchema = (isEditMode, isResettingPassword) => Yup.object({
     name: Yup.string().required("Name is required"),
@@ -143,79 +143,83 @@ export default function UserFormSheet({ isOpen, onClose, user }) {
                                 handleImageUpload={handleImageUpload}
                             />
 
-                            <div className="flex flex-col gap-2">
-                                <label className="text-[13px] font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            {/* Name Field */}
+                            <div className="relative border border-gray-200 dark:border-zinc-800 rounded-xl px-4 py-3 flex items-center gap-3 bg-white dark:bg-zinc-900 mt-2 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all">
+                                <span className="absolute -top-2.5 left-4 px-1.5 bg-[#f8fafc] dark:bg-zinc-950 text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     Full Name
-                                </label>
+                                </span>
+                                <User className="text-orange-500 w-5 h-5 shrink-0" />
                                 <input
                                     type="text"
                                     name="name"
                                     value={formik.values.name}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                    className="h-11 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                    className="w-full bg-transparent border-0 outline-none text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 p-0 focus:ring-0"
                                     placeholder="Customer Name"
                                 />
                                 {formik.touched.name && formik.errors.name && (
-                                    <span className="text-xs font-semibold text-red-500">{formik.errors.name}</span>
+                                    <span className="absolute -bottom-5 left-1 text-[11px] font-semibold text-red-500">{formik.errors.name}</span>
                                 )}
                             </div>
 
-                            <div className="flex flex-col gap-2">
-                                <label className="text-[13px] font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            {/* Phone Field */}
+                            <div className="relative border border-gray-200 dark:border-zinc-800 rounded-xl px-4 py-3 flex items-center gap-3 bg-white dark:bg-zinc-900 mt-6 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all">
+                                <span className="absolute -top-2.5 left-4 px-1.5 bg-[#f8fafc] dark:bg-zinc-950 text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     Phone Number
-                                </label>
+                                </span>
+                                <Phone className="text-orange-500 w-5 h-5 shrink-0" />
                                 <input
                                     type="text"
                                     name="phone"
                                     value={formik.values.phone}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                    className="h-11 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                    className="w-full bg-transparent border-0 outline-none text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 p-0 focus:ring-0"
                                     placeholder="9876543210"
                                     maxLength={10}
                                 />
                                 {formik.touched.phone && formik.errors.phone && (
-                                    <span className="text-xs font-semibold text-red-500">{formik.errors.phone}</span>
+                                    <span className="absolute -bottom-5 left-1 text-[11px] font-semibold text-red-500">{formik.errors.phone}</span>
                                 )}
                             </div>
 
-                            <div className="flex flex-col gap-2">
-                                <label className="text-[13px] font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                    Password
-                                </label>
-                                <div className="relative flex items-center">
-                                    <input
-                                        type={(!isEditMode || isResettingPassword) && showPassword ? "text" : "password"}
-                                        name="password"
-                                        value={isEditMode && !isResettingPassword ? "••••••••" : formik.values.password}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        disabled={isEditMode && !isResettingPassword}
-                                        className="h-11 w-full rounded-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 pl-3 pr-20 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-400 dark:disabled:bg-zinc-900"
-                                        placeholder="••••••••"
-                                    />
-                                    {isEditMode && !isResettingPassword ? (
-                                        <button
-                                            type="button"
-                                            onClick={() => setIsResettingPassword(true)}
-                                            className="absolute right-2 px-2.5 py-1 rounded bg-amber-500 hover:bg-amber-600 text-white font-bold text-[10px] uppercase tracking-wider transition-all flex items-center gap-1 shadow-xs"
-                                        >
-                                            <Key size={10} />
-                                            Reset
-                                        </button>
-                                    ) : (
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 text-gray-400 hover:text-gray-600 focus:outline-none"
-                                        >
-                                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                                        </button>
-                                    )}
-                                </div>
+                            {/* Password Field */}
+                            <div className="relative border border-gray-200 dark:border-zinc-800 rounded-xl px-4 py-3 flex items-center gap-3 bg-white dark:bg-zinc-900 mt-6 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all">
+                                <span className="absolute -top-2.5 left-4 px-1.5 bg-[#f8fafc] dark:bg-zinc-950 text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Password {isEditMode && !isResettingPassword && <span className="text-red-500 font-medium normal-case">(Cannot be changed)</span>}
+                                </span>
+                                <Lock className="text-orange-500 w-5 h-5 shrink-0" />
+                                <input
+                                    type={(!isEditMode || isResettingPassword) && showPassword ? "text" : "password"}
+                                    name="password"
+                                    value={isEditMode && !isResettingPassword ? "••••••••" : formik.values.password}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    disabled={isEditMode && !isResettingPassword}
+                                    className="w-full bg-transparent border-0 outline-none text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 p-0 focus:ring-0 disabled:text-gray-400 dark:disabled:text-gray-500"
+                                    placeholder="••••••••"
+                                />
+                                {isEditMode && !isResettingPassword ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsResettingPassword(true)}
+                                        className="px-2.5 py-1 rounded bg-amber-500 hover:bg-amber-600 text-white font-bold text-[10px] uppercase tracking-wider transition-all flex items-center gap-1 shadow-xs shrink-0"
+                                    >
+                                        <Key size={10} />
+                                        Reset
+                                    </button>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="text-gray-400 hover:text-gray-655 focus:outline-none shrink-0"
+                                    >
+                                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    </button>
+                                )}
                                 {(!isEditMode || isResettingPassword) && formik.touched.password && formik.errors.password && (
-                                    <span className="text-xs font-semibold text-red-500">{formik.errors.password}</span>
+                                    <span className="absolute -bottom-5 left-1 text-[11px] font-semibold text-red-500">{formik.errors.password}</span>
                                 )}
                             </div>
 

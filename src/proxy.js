@@ -8,7 +8,7 @@ const isPublicRoute = createRouteMatcher([
   "/((?!restaurant|api|sign-in|sign-up|_next).*)"
 ]);
 
-export default clerkMiddleware(async (auth, req) => {
+const proxyHandler = clerkMiddleware(async (auth, req) => {
   if (isPublicRoute(req)) return;
   await auth.protect();
 
@@ -22,6 +22,9 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(new URL("/restaurant/onboarding", req.url));
   } 
 });
+
+export const proxy = proxyHandler;
+export default proxyHandler;
 
 export const config = {
   matcher: ["/((?!_next|.*\\..*).*)", "/", "/(api|trpc)(.*)"],

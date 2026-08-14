@@ -1,6 +1,6 @@
 import { JsonResponse } from "@/lib/api/responseHandler";
-import { validateRequiredFields } from "@/lib/api/helpers/validator";
 import { AuthService } from "@/services/backend/auth.service";
+import { validateRequiredFields } from "@/lib/api/helpers/validator";
 
 const POST_LOGIN_REQUIRED_FIELDS = ["phone", "password"];
 
