@@ -1,0 +1,58 @@
+import redisClient, { connectRedis } from "@/lib/redis.js";
+
+export const getCache = async (key) => {
+  try {
+    await connectRedis();
+    if (!redisClient.isOpen) return null;
+    
+    const data = await redisClient.get(key);
+    if (!data) {
+      return null;
+    }
+
+    return JSON.parse(data);
+  } catch (error) {
+    console.error(`Redis GET error [${key}]:`, error.message || error);
+    return null;
+  }
+};
+
+export const setCache = async (key, value, ttl = 300) => {
+  try {
+    await connectRedis();
+    if (!redisClient.isOpen) return;
+
+    await redisClient.set(key, JSON.stringify(value), {
+      EX: ttl,
+    });
+  } catch (error) {
+    console.error(`Redis SET error [${key}]:`, error.message || error);
+  }
+};
+
+export const deleteCache = async (key) => {
+  try {
+    await connectRedis();
+    if (!redisClient.isOpen) return;
+
+    await redisClient.del(key);
+  } catch (error) {
+    console.error(`Redis DELETE error [${key}]:`, error.message || error);
+  }
+};
+
+export const deleteCacheByPattern = async (pattern) => {
+  try {
+    await connectRedis();
+    if (!redisClient.isOpen) return;
+
+    for await (const key of redisClient.scanIterator({
+      MATCH: pattern,
+      COUNT: 100,
+    })) {
+      await redisClient.del(key);
+    }
+  } catch (error) {
+    console.error(`Redis pattern delete error [${pattern}]:`, error.message || error);
+  }
+};

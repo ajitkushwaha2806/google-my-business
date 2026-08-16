@@ -1,5 +1,6 @@
 import { JsonResponse } from "@/lib/api/responseHandler";
 import { MenuSearchService } from "@/services/backend/menu/search.service";
+import { getCache, setCache } from "@/services/backend/redis/cache.service";
 
 export const GET = async (req, { params }) => {
     try {
@@ -11,6 +12,23 @@ export const GET = async (req, { params }) => {
         const page = parseInt(searchParams.get("page")) || 1;
         const limit = parseInt(searchParams.get("limit")) || 10;
 
+        const cacheKey = `restaurant:search:${slug}:${query}:${isVeg}:${page}:${limit}`;
+
+        const cachedData = await getCache(cacheKey);
+        if (cachedData) {
+            return JsonResponse.collection(
+                cachedData.items,
+                cachedData.totalResults,
+                {
+                    page,
+                    limit,
+                    search: query,
+                    extraFilters: { is_veg: isVeg }
+                },
+                "Menu items fetched successfully (cached)"
+            );
+        }
+
         const { items, totalResults } = await MenuSearchService.search(slug, {
             query,
             isVeg,
@@ -18,6 +36,7 @@ export const GET = async (req, { params }) => {
             limit
         });
 
+        await setCache(cacheKey, { items, totalResults }, 180);
         return JsonResponse.collection(
             items,
             totalResults,

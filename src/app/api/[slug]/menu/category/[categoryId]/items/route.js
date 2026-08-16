@@ -2,6 +2,7 @@ import dbConnect from "@/lib/db";
 import { MenuService } from "@/services/backend/menu";
 import { JsonResponse } from "@/lib/api/responseHandler";
 import { getRestaurantFromSlug } from "@/lib/api/hooks/getRestaurant";
+import { getCache, setCache } from "@/services/backend/redis/cache.service";
 
 export const GET = async (req, { params }) => {
   try {
@@ -11,6 +12,16 @@ export const GET = async (req, { params }) => {
       return JsonResponse.error(
         "Restaurant slug and Category ID are required!",
         400
+      );
+    }
+
+    const cacheKey = `restaurant:category-items:${slug}:${categoryId}`;
+    const cachedItems = await getCache(cacheKey);
+    if (cachedItems) {
+      return JsonResponse.success(
+        cachedItems,
+        "Items fetched successfully (cached)",
+        200
       );
     }
 
@@ -28,6 +39,7 @@ export const GET = async (req, { params }) => {
     const { items } =
       await MenuService.getAllItemsByCategory(restaurant._id.toString(), categoryId);
 
+    await setCache(cacheKey, { items }, 300);
     return JsonResponse.success(
       { items },
       "Items fetched successfully",

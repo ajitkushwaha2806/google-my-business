@@ -1,20 +1,20 @@
+import { getAuthUser } from "@/lib/api/helpers/auth";
 import { JsonResponse } from "@/lib/api/responseHandler";
 import { AuthService } from "@/services/backend/auth.service";
+import { deleteCache } from "@/services/backend/redis/cache.service";
 
 export const PUT = async (req, { params }) => {
     try {
         const { slug } = await params;
         
-        const authHeader = req.headers.get("authorization") || "";
-        const token = authHeader.startsWith("Bearer ") ? authHeader.substring(7) : authHeader;
-        
-        if (!token) {
+        const authUser = getAuthUser(req);
+        if (!authUser) {
             return JsonResponse.error("Not authenticated", 401);
         }
-
-        const body = await req.json();
-        const updatedUser = await AuthService.updateProfile(slug, token, body);
         
+        const body = await req.json();
+        const updatedUser = await AuthService.updateProfile(slug, authUser.token, body);
+        await deleteCache(`user:profile:${authUser.userId}`);
         return JsonResponse.success(updatedUser, "Profile updated successfully", 200);
     } catch (error) {
         console.error("Update profile error:", error);

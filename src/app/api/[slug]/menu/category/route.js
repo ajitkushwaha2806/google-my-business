@@ -1,11 +1,11 @@
-import { MenuService } from "@/services/backend/menu";
-import { getRestaurantFromSlug } from "@/lib/api/hooks/getRestaurant";
 import dbConnect from "@/lib/db";
+import { MenuService } from "@/services/backend/menu";
 import { JsonResponse } from "@/lib/api/responseHandler";
+import { getRestaurantFromSlug } from "@/lib/api/hooks/getRestaurant";
+import { getCache, setCache } from "@/services/backend/redis/cache.service";
 
 export const GET = async (req, { params }) => {
   try {
-
     const { slug } = await params;
     console.log("slug", slug);
 
@@ -13,6 +13,16 @@ export const GET = async (req, { params }) => {
       return JsonResponse.error(
         "Restaurant slug is required!",
         400
+      );
+    }
+
+    const cacheKey = `restaurant:categories:${slug}`;
+    const cachedCategories = await getCache(cacheKey);
+    if (cachedCategories) {
+      return JsonResponse.success(
+        cachedCategories,
+        "Categories fetched successfully (cached)",
+        200
       );
     }
 
@@ -32,6 +42,7 @@ export const GET = async (req, { params }) => {
     const { categories } =
       await MenuService.getAllCategories(restaurant._id.toString());
 
+    await setCache(cacheKey, { categories }, 300);
     return JsonResponse.success(
       { categories },
       "Categories fetched successfully",
