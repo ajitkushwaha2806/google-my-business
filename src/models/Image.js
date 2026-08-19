@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const ImageVariantSchema = new mongoose.Schema(
   {
@@ -6,26 +6,35 @@ const ImageVariantSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    url: String,
+
     width: {
       type: Number,
       required: true,
     },
+
     height: {
       type: Number,
       required: true,
     },
-    sizeBytes: Number,
-    mimeType: String,
+
+    format: {
+      type: String,
+      enum: ["avif", "webp", "jpg", "png"],
+      required: true,
+    },
+
+    sizeBytes: {
+      type: Number,
+    },
   },
   { _id: false }
 );
 
 const ImageAssetSchema = new mongoose.Schema(
   {
-    owner: {
+    restaurant: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Restaurant",
       required: true,
       index: true,
     },
@@ -35,30 +44,44 @@ const ImageAssetSchema = new mongoose.Schema(
         type: String,
         required: true,
       },
-      url: String,
-      filename: String,
-      mimeType: String,
-      sizeBytes: Number,
+
+      width: {
+        type: Number,
+      },
+
+      height: {
+        type: Number,
+      },
+
+      mimeType: {
+        type: String,
+      },
+
+      sizeBytes: {
+        type: Number,
+      },
     },
 
     variants: {
-      type: Map,
-      of: ImageVariantSchema,
-      default: {},
+      thumbnail: {
+        type: [ImageVariantSchema],
+        default: [],
+      },
+
+      card: {
+        type: [ImageVariantSchema],
+        default: [],
+      },
+
+      detail: {
+        type: [ImageVariantSchema],
+        default: [],
+      },
     },
 
-    dimensions: {
-      width: {
-        type: Number,
-        required: true,
-        min: 1,
-      },
-      height: {
-        type: Number,
-        required: true,
-        min: 1,
-      },
-      aspectRatio: Number,
+    blurHash: {
+      type: String,
+      default: null,
     },
 
     status: {
@@ -74,24 +97,9 @@ const ImageAssetSchema = new mongoose.Schema(
       index: true,
     },
 
-    blurHash: {
+    error: {
       type: String,
       default: null,
-    },
-
-    metadata: {
-      alt: String,
-      title: String,
-      description: String,
-
-      format: String,
-      colorSpace: String,
-      hasAlpha: Boolean,
-
-      exif: {
-        type: mongoose.Schema.Types.Mixed,
-        default: null,
-      },
     },
   },
   {
@@ -99,4 +107,18 @@ const ImageAssetSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("ImageAsset", ImageAssetSchema);
+ImageAssetSchema.index({
+  restaurant: 1,
+  status: 1,
+});
+
+ImageAssetSchema.index({
+  restaurant: 1,
+  createdAt: -1,
+});
+
+const ImageAsset =
+  mongoose.models.ImageAsset ||
+  mongoose.model("ImageAsset", ImageAssetSchema);
+
+export default ImageAsset;

@@ -15,7 +15,8 @@ const CategorySchema = new Schema(
       maxlength: [50, "Category name cannot exceed 50 characters"],
     },
     image: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "ImageAsset",
       default: null,
     },
     displayOrder: {

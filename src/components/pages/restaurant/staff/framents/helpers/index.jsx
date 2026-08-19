@@ -1,6 +1,7 @@
 import { TABS } from "./constant";
 import StaffTable from "../staff-table";
 import { Plus, Users } from "lucide-react";
+import Loader from "@/components/global/loader";
 import { useStaff } from "@/store/hooks/useStaff";
 import { useRestaurant } from "@/store/hooks/useRestaurant";
 
@@ -8,14 +9,23 @@ export const TabContent = ({ activeTab, handleAddStaff, handleEditStaff }) => {
     const { restaurantId } = useRestaurant();
     const { staffList, isLoading, error } = useStaff(restaurantId);
 
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[300px] w-full">
+                <Loader />
+            </div>
+        );
+    }
+
     switch (activeTab) {
+
             case "manage_users":
                 return (
                     <div className="flex flex-col gap-6">
                         <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
                             <div>
                                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Staff Management</h2>
-                                <p className="text-sm text-gray-500 mt-1">Track user staff's activity , permissions and roles.</p>
+                                <p className="text-sm text-gray-500 mt-1">Track user staff&apos;s activity , permissions and roles.</p>
                             </div>
                             <div className="flex items-center gap-3">
                                 <button

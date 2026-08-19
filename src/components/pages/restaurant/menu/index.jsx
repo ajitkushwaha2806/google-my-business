@@ -24,7 +24,7 @@ const Menu = () => {
                         activeSubCategoryId={activeSubCategory}
                     />
                 ) : (
-                    <div className="flex-1 flex items-center justify-center bg-gray-50/50 text-gray-400">
+                    <div className="flex-1 flex items-center justify-center bg-white dark:bg-zinc-950 text-gray-400">
                         <p>Select a subcategory to view items</p>
                     </div>
                 )}

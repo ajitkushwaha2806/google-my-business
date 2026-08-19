@@ -2,18 +2,18 @@
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { useUser } from "@/store/hooks/useUser";
 import { Button } from "@/components/ui/button";
 import { generateSlug } from "@/lib/client/helper";
 import { onboardingValidationSchema } from "./helper";
-import { RestaurantService } from "@/services/frontend/restaurant";
+import { useActiveUser } from "@/store/hooks/useActiveUser";
 import useNotification from "@/store/hooks/useNotification";
+import { RestaurantService } from "@/services/frontend/restaurant";
 import { Store, Link2, Phone, Mail, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export default function OnboardingPage() {
   const router = useRouter();
   const { createRestaurant } = RestaurantService;
-  const { user } = useUser();
+  const { user } = useActiveUser();
   const notification = useNotification()
  
   const formik = useFormik({

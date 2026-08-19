@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useFormik } from "formik";
+import { getImageUrl } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { UploadService } from "@/services/frontend/upload";
-import { RestaurantService } from "@/services/frontend/restaurant";
 import { useRestaurant } from "@/store/hooks/useRestaurant";
 import useNotification from "@/store/hooks/useNotification";
 import { useFormMutation } from "@/store/hooks/useFormMutation";
+import { RestaurantService } from "@/services/frontend/restaurant";
 import { Store, Link2, Phone, Mail, Image as ImageIcon, Save, Loader2, Upload } from "lucide-react";
 
 const GeneralTab = ({ generalData }) => {
@@ -37,7 +38,13 @@ const GeneralTab = ({ generalData }) => {
     enableReinitialize: true,
     onSubmit: (values, { resetForm }) => {
       if (!restaurantId) return;
-      mutate(values, {
+      
+      const payload = {
+        ...values,
+        logo: values.logo?._id || values.logo || null,
+      };
+
+      mutate(payload, {
         onSuccess: () => resetForm({ values }),
       });
     },
@@ -53,10 +60,13 @@ const GeneralTab = ({ generalData }) => {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("folder", "logos");
+      formData.append("path", "logo");
 
-      const data = await UploadService.uploadFile(formData);
-      formik.setFieldValue("logo", data?.data?.url || data?.url);
+      const data = await UploadService.uploadFile(formData, restaurantId);
+      formik.setFieldValue("logo", { 
+        _id: data?.imageId || data?.data?.imageId, 
+        original: { key: data?.key || data?.data?.key },
+      });
       notification.success("Image uploaded successfully!");
     } catch (error) {
       notification.error(error?.response?.data?.message || error?.message || "Failed to upload image");
@@ -70,7 +80,7 @@ const GeneralTab = ({ generalData }) => {
     <form onSubmit={formik.handleSubmit} className="flex flex-col">
       <div className="mb-8">
         <h3 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">General Information</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Update your restaurant's name, logo, and basic contact details.</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Update your restaurant&apos;s name, logo, and basic contact details.</p>
       </div>
 
       <div className="space-y-8">
@@ -79,7 +89,7 @@ const GeneralTab = ({ generalData }) => {
           <div className="flex items-center gap-5">
             {formik.values.logo ? (
               <div className="relative size-20 rounded-xl overflow-hidden border border-border/50 bg-muted shrink-0 shadow-sm">
-                <img src={formik.values.logo} alt="Logo" className="w-full h-full object-cover" />
+                <img src={getImageUrl(formik.values.logo, true, "thumbnail")} alt="Logo" className="w-full h-full object-cover" />
               </div>
             ) : (
               <div className="size-20 rounded-xl border border-dashed border-border flex items-center justify-center bg-muted/30 shrink-0">

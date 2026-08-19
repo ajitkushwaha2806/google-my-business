@@ -1,9 +1,12 @@
 import dbConnect from "@/lib/db";
 import * as argon2 from "argon2";
 import { Staff } from "@/models/Staff";
+import ImageAsset from "@/models/Image";
 import Restaurant from "@/models/Restaurant";
 import { JsonResponse } from "@/lib/api/responseHandler";
 import { validateRequiredFields } from "@/lib/api/helpers/validator";
+import { getCache, setCache, deleteCache } from "@/services/backend/redis/cache.service";
+
 
 const STAFF_POST_REQUIRED_FIELDS = ["name", "email", "role", "password"];
 
@@ -11,8 +14,14 @@ export const GET = async (req, { params }) => {
     try {
         await dbConnect();
         const { id: restaurantId } = await params;
+        const cacheKey = `restaurant:staff:${restaurantId}`;
+        const cachedStaffList = await getCache(cacheKey);
+        if (cachedStaffList) {
+            return JsonResponse.success(cachedStaffList, "Staff list fetched successfully (cached)");
+        }
         
         const staffList = await Staff.find({ restaurant: restaurantId })
+            .populate("image")
             .populate({
                 path: "role",
                 select: "name description permissions isSystemRole",
@@ -24,6 +33,8 @@ export const GET = async (req, { params }) => {
             .select("-passwordHash")
             .sort({ createdAt: -1 })
             .lean();
+            
+        await setCache(cacheKey, staffList, 3600);
             
         return JsonResponse.success(staffList);
     } catch (error) {
@@ -74,8 +85,9 @@ export const POST = async (req, { params }) => {
             status: status || "ACTIVE"
         });
         
-        const populatedStaff = await Staff.findById(newStaff._id).populate("role", "name description isSystemRole").select("-passwordHash");
+        await deleteCache(`restaurant:staff:${restaurantId}`);
         
+        const populatedStaff = await Staff.findById(newStaff._id).populate("image").populate("role", "name description isSystemRole").select("-passwordHash");
         return JsonResponse.success(populatedStaff, "Staff member added successfully", 201);
     } catch (error) {
         return JsonResponse.error(error.message || "Failed to create staff member");

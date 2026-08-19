@@ -52,7 +52,11 @@ const MenuItemSchema = new Schema(
     },
     name: { type: String, required: true, trim: true },
     description: { type: String, default: "" },
-    image: { type: String, default: null },
+    image: {
+      type: Schema.Types.ObjectId,
+      ref: "ImageAsset",
+      default: null,
+    },
     base_price: {
       type: Number,
       required: [true, "Base price is required"],

@@ -1,7 +1,5 @@
-import { redirect } from "next/navigation";
-
 const Page = () => {
-  redirect("/restaurant/profile");
-};
+  return <div></div>
+}
 
-export default Page;
+export default Page

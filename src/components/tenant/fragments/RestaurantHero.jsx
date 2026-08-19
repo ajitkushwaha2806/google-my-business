@@ -1,5 +1,6 @@
 "use client";
-import { MapPin, Phone, Clock } from "lucide-react";
+import { getImageUrl } from "@/lib/utils";
+import { MapPin, Phone } from "lucide-react";
 
 export function RestaurantHero({ restaurant }) {
   if (!restaurant) return null;
@@ -16,7 +17,7 @@ export function RestaurantHero({ restaurant }) {
       <div className="relative z-10 max-w-3xl mx-auto px-5 py-10 flex flex-col items-center gap-5 text-center">
         {restaurant.logo ? (
           <img
-            src={restaurant.logo}
+            src={getImageUrl(restaurant.logo, true, "thumbnail")}
             alt={restaurant.name}
             className="w-20 h-20 rounded-2xl object-cover border-2 border-white/20 shadow-xl"
           />

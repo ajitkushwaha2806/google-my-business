@@ -7,7 +7,8 @@ export const API_ENDPOINTS = {
         DELETE_RESTAURANT: (id) => `/api/restaurant/${id}`,
     },
     UPLOAD: {
-        FILE: "/api/upload"
+        FILE: (resId) => `/api/restaurant/${resId}/uploads`,
+        PRESIGN: (resId) => `/api/restaurant/${resId}/uploads/presign`
     },
     MENU: {
         CATEGORY: {

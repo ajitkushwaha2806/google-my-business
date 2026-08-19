@@ -1,9 +1,12 @@
 import dbConnect from "@/lib/db";
+import ImageAsset from "@/models/Image";
 import Restaurant from "@/models/Restaurant";
 import { getUser } from "@/lib/api/hooks/getUser";
 import { clerkClient } from "@clerk/nextjs/server";
 import { JsonResponse } from "@/lib/api/responseHandler";
 import { validateRequiredFields } from "@/lib/api/helpers/validator";
+import { getCache, setCache, deleteCache } from "@/services/backend/redis/cache.service";
+
 
 const RESTAURANT_POST_REQUIRED_FIELDS = ["name", "phone", "email", "slug"];
 
@@ -48,16 +51,8 @@ export const POST = async (req) => {
         });
 
         await newRestaurant.save();
+        await deleteCache(`restaurants:user:${user.id}`);
         const client = await clerkClient();
-        
-        const existingRestaurants = user?.publicMetadata?.restaurants || [];
-        const response = await client.users.updateUserMetadata(user?.id, {
-            publicMetadata: {
-                restaurants: [...existingRestaurants, newRestaurant._id.toString()],
-                ...(existingRestaurants.length === 0 && { restaurantId: newRestaurant._id.toString() })
-            },
-        });
-
         return JsonResponse.success({ restaurantId: newRestaurant._id }, "Restaurant created successfully", 200);
     } catch (err) {
         return JsonResponse.error(
@@ -79,9 +74,24 @@ export const GET = async () => {
             );
         }
 
+        const cacheKey = `restaurants:user:${user.id}`;
+        const cachedRestaurants = await getCache(cacheKey);
+
+        if (cachedRestaurants) {
+            return JsonResponse.success(
+                { restaurants: cachedRestaurants },
+                cachedRestaurants.length
+                    ? "Restaurants fetched successfully (cached)"
+                    : "No restaurants found (cached)",
+                200
+            );
+        }
+
         const restaurants = await Restaurant.find({
             createdBy: user.id,
-        }).lean();
+        }).populate("logo").lean();
+
+        await setCache(cacheKey, restaurants, 3600);
 
         return JsonResponse.success(
             { restaurants },

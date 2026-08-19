@@ -1,4 +1,5 @@
 import MenuItem from "@/models/Item";
+import ImageAsset from "@/models/Image";
 import Category from "@/models/Category";
 
 export const MenuService = {
@@ -14,7 +15,7 @@ export const MenuService = {
           const itemWithImage = await MenuItem.findOne({
             category: category._id,
             image: { $ne: null, $ne: "" },
-          }).lean();
+          }).populate("image").lean();
 
           if (itemWithImage) {
             category.image = itemWithImage.image;
@@ -33,6 +34,7 @@ export const MenuService = {
       category: categoryId,
     })
       .populate("subCategory", "name")
+      .populate("image")
       .lean();
 
     const groupedItems = items.reduce((acc, item) => {

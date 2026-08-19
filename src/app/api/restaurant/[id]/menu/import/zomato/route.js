@@ -1,8 +1,10 @@
+import fs from "fs";
 import axios from "axios";
 import crypto from "crypto";
 import dbConnect from "@/lib/db";
 import MenuItem from "@/models/Item";
 import Category from "@/models/Category";
+import ImageAsset from "@/models/Image";
 import { uploadToS3 } from "@/services/backend/s3";
 import { JsonResponse } from "@/lib/api/responseHandler";
 
@@ -47,12 +49,18 @@ export const GET = async (req, { params }) => {
             return JsonResponse.error("pageUrl is required", 400);
         }
 
-        let pageUrl = pageUrlParam;
+        let pageUrl = pageUrlParam.trim();
         try {
             if (pageUrl.startsWith("http")) {
                 const parsedUrl = new URL(pageUrl);
                 pageUrl = parsedUrl.pathname;
             }
+            
+            const cleanPath = pageUrl.replace(/\/$/, "");
+            if (!cleanPath.endsWith("/order")) {
+                pageUrl = cleanPath + "/order";
+            }
+            
             if (!pageUrl.startsWith("/")) {
                 pageUrl = "/" + pageUrl;
             }
@@ -83,7 +91,6 @@ export const GET = async (req, { params }) => {
 
         console.log("modifier Groupd" , modifierGroups)
 
-        const fs = require('fs');
         fs.writeFileSync('test.json', JSON.stringify(response?.data, null, 2));
         let categoriesImported = 0;
         let itemsImported = 0;
@@ -145,10 +152,20 @@ export const GET = async (req, { params }) => {
                                 folder: `restaurants/${id}/menu`,
                                 fileName: `item-${Date.now()}-${crypto.randomUUID()}${ext}`,
                             });
-                            image = s3Result.url;
+                            
+                            const imageAsset = await ImageAsset.create({
+                                restaurant: id,
+                                original: {
+                                    key: s3Result.key,
+                                    mimeType: s3Result.contentType,
+                                    sizeBytes: buffer.length
+                                },
+                                status: "PENDING"
+                            });
+                            image = imageAsset._id;
                         } catch (err) {
                             console.error("Failed to upload Zomato image to S3", err);
-                            image = zomatoImageUrl; 
+                            image = null; 
                         }
                     }
 

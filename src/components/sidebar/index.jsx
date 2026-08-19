@@ -1,20 +1,13 @@
 "use client";
 import { NavUser } from "./nav-user";
 import { NavMain } from "./nav-main";
-import { useUser } from "@/store/hooks/useUser";
 import { APP_SIDEBAR_CONFIG } from "@/constants/sidebar";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-  SidebarSeparator,
-} from "@/components/ui/sidebar";
+import { useActiveUser } from "@/store/hooks/useActiveUser";
 import RestaurantSwitcher from "../global/restaurant-switcher";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail, SidebarSeparator } from "@/components/ui/sidebar";
 
 export function AppSidebar(props) {
-  const { user: userData, isLoaded } = useUser();
+  const { user: userData, isLoaded } = useActiveUser();
 
   const sidebarConfig = {
     user: {

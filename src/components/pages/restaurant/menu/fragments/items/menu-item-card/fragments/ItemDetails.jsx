@@ -1,12 +1,13 @@
 import { Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { getImageUrl } from "@/lib/utils";
 
 export default function ItemDetails({ item, updateField, onDelete }) {
     return (
         <div className="flex gap-3">
             <div className="shrink-0 rounded-lg overflow-hidden border transition-all duration-200 group/img h-16 w-16 relative">
                 <img
-                    src={item?.image || "https://placehold.co/200x200?text=Food"}
+                    src={getImageUrl(item?.image, true, "thumbnail") || "https://placehold.co/200x200?text=Food"}
                     alt={item?.name || "Item"}
                     className="w-full h-full object-cover"
                 />

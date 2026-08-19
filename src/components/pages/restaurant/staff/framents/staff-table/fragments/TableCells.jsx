@@ -1,13 +1,14 @@
-import { Edit2, Phone, Trash2, ShieldCheck } from "lucide-react";
-import { getStatusBadge } from "../helper/constants";
+import { getImageUrl } from "@/lib/utils";
 import { formatDate } from "../helper/utils";
+import { getStatusBadge } from "../helper/constants";
+import { Edit2, Phone, Trash2, ShieldCheck } from "lucide-react";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 export const StaffProfileCell = ({ staff }) => (
     <div className="flex items-center gap-3.5">
         <div className="w-11 h-11 rounded-md overflow-hidden shrink-0 border border-gray-100 dark:border-zinc-800 shadow-sm">
             <img 
-                src={staff.image || `https://api.dicebear.com/7.x/notionists/svg?seed=${staff.name}&backgroundColor=f1f5f9`} 
+                src={getImageUrl(staff.image, true, "thumbnail") || `https://api.dicebear.com/7.x/notionists/svg?seed=${staff.name}&backgroundColor=f1f5f9`} 
                 alt={staff.name} 
                 className="w-full h-full object-cover"
             />

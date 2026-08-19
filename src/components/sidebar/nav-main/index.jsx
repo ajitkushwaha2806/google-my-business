@@ -1,4 +1,5 @@
-"use client";
+// Import Link at the top of the file
+import Link from "next/link";
 import { ChevronRightIcon } from "lucide-react";
 import {
   Collapsible,
@@ -52,7 +53,7 @@ export function NavMain({ title, items }) {
                   {item?.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem?.title}>
                       <SidebarMenuSubButton
-                        render={<a href={subItem?.url} />}
+                        render={<Link href={subItem?.url} />}
                         className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100 transition-colors"
                       >
                         {subItem?.icon && (
@@ -70,7 +71,7 @@ export function NavMain({ title, items }) {
           ) : (
             <SidebarMenuItem key={item?.title}>
               <SidebarMenuButton
-                render={<a href={item?.url} />}
+                render={<Link href={item?.url} />}
                 tooltip={item?.title}
                 className={`relative flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${item?.isActive ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-semibold before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r-full before:bg-blue-600" : "text-gray-600 dark:text-gray-400"}`}
               >

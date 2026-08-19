@@ -20,7 +20,8 @@ const userSchema = new Schema(
     },
 
     image: {
-      type: String,
+      type: Types.ObjectId,
+      ref: "ImageAsset",
       default: null,
     },
 

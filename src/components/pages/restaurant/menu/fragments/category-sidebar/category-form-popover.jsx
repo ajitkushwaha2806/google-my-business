@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { UploadService } from "@/services/frontend/upload";
+import { useRestaurant } from "@/store/hooks/useRestaurant";
 import useNotification from "@/store/hooks/useNotification";
 import { Plus, Image as ImageIcon, Loader2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -15,6 +16,7 @@ export function CategoryFormPopover({ children, initialData, onSubmit, open: con
     const [name, setName] = useState(initialData?.name || "");
     const [image, setImage] = useState(initialData?.image || "");
     const [uploading, setUploading] = useState(false);
+    const { restaurantId } = useRestaurant();
     const notification = useNotification();
 
     const handleUpload = async (e) => {
@@ -26,7 +28,7 @@ export function CategoryFormPopover({ children, initialData, onSubmit, open: con
             const formData = new FormData();
             formData.append("file", file);
             formData.append("folder", "categories");
-            const res = await UploadService.uploadFile(formData);
+            const res = await UploadService.uploadFile(formData, restaurantId);
             setImage(res?.data?.url || res?.url);
         } catch (error) {
             notification.error(error?.response?.data?.message || "Failed to upload image");

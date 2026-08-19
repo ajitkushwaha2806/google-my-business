@@ -6,15 +6,15 @@ import { Button } from "@/components/ui/button";
 import { useRole } from "@/store/hooks/useRole";
 import { useQuery } from "@tanstack/react-query";
 import { useStaff } from "@/store/hooks/useStaff";
-import { UploadService } from "@/services/frontend/upload";
 import { User, Shield, Loader2 } from "lucide-react";
 import { BasicFields } from "./fragments/BasicFields";
 import { AvatarUpload } from "./fragments/AvatarUpload";
-import { RestaurantService } from "@/services/frontend/restaurant";
 import { RoleSelection } from "./fragments/RoleSelection";
+import { UploadService } from "@/services/frontend/upload";
 import { useRestaurant } from "@/store/hooks/useRestaurant";
 import useNotification from "@/store/hooks/useNotification";
 import { StatusSelection } from "./fragments/StatusSelection";
+import { RestaurantService } from "@/services/frontend/restaurant";
 import { staffUpdateValidationSchema, staffValidationSchema } from "./helper/validator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
@@ -41,7 +41,8 @@ export default function StaffFormSheet({ isOpen, onClose, staff }) {
 
     useEffect(() => {
         if (isOpen) {
-            setIsVisible(true);
+            const timer = setTimeout(() => setIsVisible(true), 0);
+            return () => clearTimeout(timer);
         } else {
             const timer = setTimeout(() => setIsVisible(false), 300);
             return () => clearTimeout(timer);
@@ -66,7 +67,7 @@ export default function StaffFormSheet({ isOpen, onClose, staff }) {
                     name: values.name,
                     role: values.role,
                     status: values.status,
-                    image: values.image,
+                    image: values.image?._id || values.image || null,
                     ...( !isEditMode && { email: fullEmail, password: values.password } )
                 };
 
@@ -101,8 +102,11 @@ export default function StaffFormSheet({ isOpen, onClose, staff }) {
             formData.append("file", file);
             formData.append("path", "staff-profiles");
 
-            const data = await UploadService.uploadFile(formData);
-            formik.setFieldValue("image", data?.data?.url || data?.url);
+            const data = await UploadService.uploadFile(formData, restaurantId);
+            formik.setFieldValue("image", {
+                _id: data?.imageId || data?.data?.imageId,
+                key: data?.key || data?.data?.key
+            });
             notification.success("Profile image uploaded successfully!", { duration: 3000 });
         } catch (error) {
             notification.error(error?.response?.data?.message || error?.message || "Failed to upload image", { duration: 3000 });
@@ -110,6 +114,7 @@ export default function StaffFormSheet({ isOpen, onClose, staff }) {
             setIsUploading(false);
         }
     };
+
 
     if (!isVisible && !isOpen) return null;
 

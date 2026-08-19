@@ -1,12 +1,14 @@
 import dbConnect from "@/lib/db";
 import * as argon2 from "argon2";
 import { User } from "@/models/User";
+import ImageAsset from "@/models/Image";
 import Restaurant from "@/models/Restaurant";
 
 export class UserService {
     static async getAll(restaurantId) {
         await dbConnect();
         return await User.find({ restaurant: restaurantId })
+            .populate("image")
             .select("-passwordHash")
             .sort({ createdAt: -1 })
             .lean();
@@ -31,13 +33,10 @@ export class UserService {
             parallelism: 1
         });
 
-        let finalImage = image;
-        if (!finalImage) {
-            const restaurant = await Restaurant.findById(restaurantId);
-            if (restaurant && restaurant.logo) {
-                finalImage = restaurant.logo;
-            }
-        }
+        const isInvalidImage = !image || ["", "null", "undefined"].includes(String(image));
+        const finalImage = isInvalidImage 
+            ? (await Restaurant.findById(restaurantId).lean())?.logo || null 
+            : image;
 
         const newUser = await User.create({
             name,
@@ -48,7 +47,7 @@ export class UserService {
             status: status || "ACTIVE"
         });
 
-        return await User.findById(newUser._id).select("-passwordHash");
+        return await User.findById(newUser._id).populate("image").select("-passwordHash");
     }
 
     static async update(restaurantId, userId, { name, phone, password, status, image }) {
@@ -64,14 +63,10 @@ export class UserService {
         if (phone) user.phone = phone;
 
         if (image !== undefined) {
-            let finalImage = image;
-            if (!finalImage) {
-                const restaurant = await Restaurant.findById(restaurantId);
-                if (restaurant && restaurant.logo) {
-                    finalImage = restaurant.logo;
-                }
-            }
-            user.image = finalImage;
+            const isInvalidImage = !image || ["", "null", "undefined"].includes(String(image));
+            user.image = isInvalidImage 
+                ? (await Restaurant.findById(restaurantId).lean())?.logo || null 
+                : image;
         }
 
         if (password) {
@@ -84,8 +79,7 @@ export class UserService {
         }
 
         await user.save();
-
-        return await User.findById(userId).select("-passwordHash");
+        return await User.findById(userId).populate("image").select("-passwordHash");
     }
 
     static async delete(restaurantId, userId) {

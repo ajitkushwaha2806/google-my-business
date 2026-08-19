@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/db";
 import MenuItem from "@/models/Item";
+import ImageAsset from "@/models/Image";
 import Category from "@/models/Category";
 import Restaurant from "@/models/Restaurant";
 import { getUser } from "@/lib/api/hooks/getUser";
@@ -35,7 +36,7 @@ export const GET = async (req, { params }) => {
         if (categoryId) query.category = categoryId;
         if (subCategoryId) query.subCategory = subCategoryId;
 
-        const items = await MenuItem.find(query).sort({ displayOrder: 1, createdAt: -1 });
+        const items = await MenuItem.find(query).populate("image").sort({ displayOrder: 1, createdAt: -1 });
         return JsonResponse.success(items, "Items fetched successfully", 200);
     } catch (err) {
         return JsonResponse.error(err?.message || "Internal Server Error!", 500);
@@ -101,7 +102,8 @@ export const POST = async (req, { params }) => {
         };
 
         const newItem = await MenuItem.create(newItemData);
-        return JsonResponse.success(newItem, "Item created successfully", 201);
+        const populatedItem = await MenuItem.findById(newItem._id).populate("image");
+        return JsonResponse.success(populatedItem, "Item created successfully", 201);
     } catch (err) {
         return JsonResponse.error(err?.message || "Internal Server Error!", 500);
     }
@@ -153,7 +155,7 @@ export const PUT = async (req, { params }) => {
             { _id: itemId, restaurant: id },
             { $set: data },
             { new: true, runValidators: true }
-        );
+        ).populate("image");
 
         if (!updatedItem) {
             return JsonResponse.error("Item not found", 404);

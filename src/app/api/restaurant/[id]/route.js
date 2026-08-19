@@ -1,7 +1,10 @@
 import dbConnect from "@/lib/db";
+import ImageAsset from "@/models/Image";
 import Restaurant from "@/models/Restaurant";
 import { JsonResponse } from "@/lib/api/responseHandler";
 import { getRestaurant } from "@/lib/api/hooks/getRestaurant";
+import { getCache, setCache, deleteCache } from "@/services/backend/redis/cache.service";
+
 
 const ALLOWED_UPDATE_FIELDS = [
     "name", "slug", "logo", "address", "phone", "domain",
@@ -40,11 +43,14 @@ export const PUT = async (req, { params }) => {
             id,
             { $set: updateData },
             { new: true, runValidators: true }
-        );
+        ).populate("logo");
 
         if (!updatedRestaurant) {
             return JsonResponse.error("Restaurant not found.", 404);
         }
+
+        await deleteCache(`restaurants:user:${user.id}`);
+        await deleteCache(`restaurant:details:${id}`);
 
         return JsonResponse.success(
             { restaurant: updatedRestaurant }, 
@@ -60,23 +66,32 @@ export const PUT = async (req, { params }) => {
 };
 
 export const GET = async (req, { params }) => {
-    console.log("HIT /api/restaurant/[id] with params:", params);
     try {
         const { id } = await params;
         await dbConnect();    
         const { user, restaurant } = await getRestaurant();
 
-        
         if (!user || !restaurant) {
             return JsonResponse.error("Please login first to continue!", 401);
         }
 
-        const restaurantDetails = await Restaurant.findById(id);
-        console.log("restaurantDetails" , restaurantDetails)
+        const cacheKey = `restaurant:details:${id}`;
+        const cachedDetails = await getCache(cacheKey);
 
+        if (cachedDetails) {
+            return JsonResponse.success(
+                cachedDetails, 
+                "Restaurant details fetched successfully (cached)", 
+                200
+            );
+        }
+
+        const restaurantDetails = await Restaurant.findById(id).populate("logo").lean();
         if (!restaurantDetails) {
             return JsonResponse.error("Restaurant not found.", 404);
         }
+
+        await setCache(cacheKey, restaurantDetails, 3600);
 
         return JsonResponse.success(
             restaurantDetails, 

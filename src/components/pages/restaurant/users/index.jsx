@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import UserTable from "./fragments/user-table";
+import Loader from "@/components/global/loader";
 import { useUsers } from "@/store/hooks/useUsers";
 import UserFormSheet from "./fragments/user-form-sheet";
 import { useRestaurant } from "@/store/hooks/useRestaurant";
@@ -32,7 +33,7 @@ const UserManagement = () => {
                         <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
                             <div>
                                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">User Management</h2>
-                                <p className="text-sm text-gray-500 mt-1">Track and manage your restaurant's registered customers.</p>
+                                <p className="text-sm text-gray-500 mt-1">Track and manage your restaurant&apos;s registered customers.</p>
                             </div>
                             <div className="flex items-center gap-3">
                                 <button
@@ -48,12 +49,18 @@ const UserManagement = () => {
 
                     <div className="p-6">
                         <div className="border border-gray-200 dark:border-zinc-800 rounded-md overflow-hidden bg-white">
-                            <UserTable 
-                                userList={userList}
-                                isLoading={isLoading}
-                                error={error}
-                                onEdit={handleEditUser}
-                            />
+                            {isLoading ? (
+                                <div className="flex items-center justify-center min-h-[300px] w-full">
+                                    <Loader />
+                                </div>
+                            ) : (
+                                <UserTable 
+                                    userList={userList}
+                                    isLoading={isLoading}
+                                    error={error}
+                                    onEdit={handleEditUser}
+                                />
+                            )}
                         </div>
                     </div>
 

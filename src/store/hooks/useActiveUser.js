@@ -1,6 +1,6 @@
 import { useUser as useClerkUser } from "@clerk/nextjs";
 
-export const useUser = () => {
+export const useActiveUser = () => {
   const { isLoaded, isSignedIn, user } = useClerkUser();
   const userData = user
     ? {

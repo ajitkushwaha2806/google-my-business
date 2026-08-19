@@ -1,6 +1,6 @@
-import { S3Client } from "@aws-sdk/client-s3";
+import { SQSClient } from "@aws-sdk/client-sqs";
 
-export const s3Client = new S3Client({
+export const sqsClient = new SQSClient({
   region: process.env.AWS_REGION,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -8,4 +8,4 @@ export const s3Client = new S3Client({
   },
 });
 
-export const S3_BUCKET = process.env.AWS_S3_BUCKET;
+export const AWS_SQS_QUEUE_URL = process.env.AWS_SQS_QUEUE_URL;

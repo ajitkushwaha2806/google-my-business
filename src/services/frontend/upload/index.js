@@ -1,13 +1,7 @@
-import api from "@/lib/api/axiosInstance";
-import { API_ENDPOINTS } from "../../api-endpoints";
+import { ImageUploadService } from "../images";
 
 export const UploadService = {
-  uploadFile: async (formData) => {
-    const response = await api.post(API_ENDPOINTS.UPLOAD.FILE, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
+  uploadFile: async (formData, restaurantId) => {
+    return ImageUploadService.uploadImage(formData, restaurantId);
   },
 };

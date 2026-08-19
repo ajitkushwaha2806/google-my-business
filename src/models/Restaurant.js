@@ -24,8 +24,8 @@ const RestaurantSchema = new Schema(
     },
 
     logo: {
-      type: String,
-      trim: true,
+      type: Schema.Types.ObjectId,
+      ref: "ImageAsset",
       default: null,
     },
 

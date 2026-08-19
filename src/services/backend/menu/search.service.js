@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/db";
 import MenuItem from "@/models/Item";
+import ImageAsset from "@/models/Image";
 import Category from "@/models/Category";
 import { getRestaurantFromSlug } from "@/lib/api/hooks/getRestaurant";
 
@@ -129,6 +130,7 @@ export class MenuSearchService {
                 items = await MenuItem.find(fallbackFilter)
                     .populate("category", "name")
                     .populate("subCategory", "name")
+                    .populate("image")
                     .sort({ displayOrder: 1 })
                     .skip((page - 1) * limit)
                     .limit(limit)
@@ -148,6 +150,7 @@ export class MenuSearchService {
             items = await MenuItem.find(filter)
                 .populate("category", "name")
                 .populate("subCategory", "name")
+                .populate("image")
                 .sort({ displayOrder: 1 })
                 .skip((page - 1) * limit)
                 .limit(limit)

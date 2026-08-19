@@ -35,8 +35,11 @@ export default function UserFormSheet({ isOpen, onClose, user }) {
 
     useEffect(() => {
         if (isOpen) {
-            setIsVisible(true);
-            setIsResettingPassword(false);
+            const timer = setTimeout(() => {
+                setIsVisible(true);
+                setIsResettingPassword(false);
+            }, 0);
+            return () => clearTimeout(timer);
         } else {
             const timer = setTimeout(() => {
                 setIsVisible(false);
@@ -63,7 +66,7 @@ export default function UserFormSheet({ isOpen, onClose, user }) {
                         name: values.name,
                         phone: values.phone,
                         status: values.status,
-                        image: values.image
+                        image: values.image?._id || values.image || null
                     };
                     if (isResettingPassword) {
                         payload.password = values.password;
@@ -83,7 +86,7 @@ export default function UserFormSheet({ isOpen, onClose, user }) {
                         phone: values.phone,
                         status: values.status,
                         password: values.password,
-                        image: values.image
+                        image: values.image?._id || values.image || null
                     }, {
                         onSuccess: () => {
                             resetForm();
@@ -107,8 +110,11 @@ export default function UserFormSheet({ isOpen, onClose, user }) {
             formData.append("file", file);
             formData.append("path", "user-profiles");
 
-            const data = await UploadService.uploadFile(formData);
-            formik.setFieldValue("image", data?.data?.url || data?.url);
+            const data = await UploadService.uploadFile(formData, restaurantId);
+            formik.setFieldValue("image", {
+                _id: data?.imageId || data?.data?.imageId,
+                key: data?.key || data?.data?.key
+            });
             notification.success("Profile image uploaded successfully!", { duration: 3000 });
         } catch (error) {
             notification.error(error?.response?.data?.message || error?.message || "Failed to upload image", { duration: 3000 });

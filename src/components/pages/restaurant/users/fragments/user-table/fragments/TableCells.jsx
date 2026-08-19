@@ -1,11 +1,12 @@
 import { format } from "date-fns";
+import { getImageUrl } from "@/lib/utils";
 import { Edit2, Phone, Trash2 } from "lucide-react";
 
 export const UserProfileCell = ({ user }) => (
     <div className="flex items-center gap-3.5">
         <div className="w-11 h-11 rounded-md overflow-hidden shrink-0 border border-gray-100 dark:border-zinc-800 shadow-sm">
             <img 
-                src={user.image || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.phone}&backgroundColor=f1f5f9`} 
+                src={getImageUrl(user.image, true, "thumbnail") || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.phone}&backgroundColor=f1f5f9`} 
                 alt={user.name} 
                 className="w-full h-full object-cover"
             />
@@ -63,21 +64,24 @@ export const UserStatusCell = ({ user }) => {
 
 export const UserJoinedCell = ({ user }) => {
     if (!user.createdAt) return <span>-</span>;
+    let date = "";
+    let time = "";
     try {
-        const date = format(new Date(user.createdAt), "dd MMM yyyy");
-        const time = format(new Date(user.createdAt), "hh:mm a");
-        return (
-            <div className="flex flex-col">
-                <span className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">{date}</span>
-                <span className="text-[12px] text-gray-500 flex items-center gap-1 mt-0.5">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    {time}
-                </span>
-            </div>
-        );
+        date = format(new Date(user.createdAt), "dd MMM yyyy");
+        time = format(new Date(user.createdAt), "hh:mm a");
     } catch {
         return <span>-</span>;
     }
+
+    return (
+        <div className="flex flex-col">
+            <span className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">{date}</span>
+            <span className="text-[12px] text-gray-500 flex items-center gap-1 mt-0.5">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                {time}
+            </span>
+        </div>
+    );
 };
 
 export const UserActionsCell = ({ user, onEdit, onDelete }) => (
