@@ -1,12 +1,13 @@
 import ImageAsset from "@/models/Image";
 import { JsonResponse } from "@/lib/api/responseHandler";
 import { UserService } from "@/services/backend/user.service";
-import { getCache, setCache, deleteCache } from "@/services/backend/redis/cache.service";
+import { getCache, setCache } from "@/services/backend/redis/cache.service";
+import { getUsersCacheKey, invalidateUserCache } from "@/lib/api/helpers/cacheKeys";
 
 export const GET = async (req, { params }) => {
     try {
         const { id: restaurantId } = await params;
-        const cacheKey = `restaurant:users:${restaurantId}`;
+        const cacheKey = getUsersCacheKey(restaurantId);
         const cachedUsers = await getCache(cacheKey);
         
         if (cachedUsers) {
@@ -28,7 +29,7 @@ export const POST = async (req, { params }) => {
         const body = await req.json();
         const newUser = await UserService.create(restaurantId, body);
         
-        await deleteCache(`restaurant:users:${restaurantId}`);
+        await invalidateUserCache(restaurantId);
         return JsonResponse.success(newUser, "User added successfully", 201);
     } catch (error) {
         console.error("Failed to create user:", error);

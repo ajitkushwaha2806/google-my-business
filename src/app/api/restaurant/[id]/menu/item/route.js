@@ -6,8 +6,26 @@ import Restaurant from "@/models/Restaurant";
 import { getUser } from "@/lib/api/hooks/getUser";
 import { JsonResponse } from "@/lib/api/responseHandler";
 import { validateRequiredFields } from "@/lib/api/helpers/validator";
+import { getCache, setCache } from "@/services/backend/redis/cache.service";
+import { getItemsCacheKey, invalidateItemCache } from "@/lib/api/helpers/cacheKeys";
 
 const MENU_ITEM_POST_REQUIRED_FIELDS = ["category", "name", "base_price", "dietaryType"];
+
+const calculateMinVariantPrice = (variants, currentBasePrice) => {
+    if (!Array.isArray(variants) || variants.length === 0) return currentBasePrice;
+    let minPrice = Infinity;
+    variants.forEach(variant => {
+        if (Array.isArray(variant.options)) {
+            variant.options.forEach(opt => {
+                const price = Number(opt.price);
+                if (!isNaN(price) && price < minPrice) {
+                    minPrice = price;
+                }
+            });
+        }
+    });
+    return minPrice !== Infinity ? minPrice : currentBasePrice;
+};
 
 export const GET = async (req, { params }) => {
     try {
@@ -32,12 +50,19 @@ export const GET = async (req, { params }) => {
         const categoryId = searchParams.get('categoryId');
         const subCategoryId = searchParams.get('subCategoryId');
 
-        const query = { restaurant: id };
-        if (categoryId) query.category = categoryId;
-        if (subCategoryId) query.subCategory = subCategoryId;
+        const cacheKey = getItemsCacheKey(id);
+        let items = await getCache(cacheKey);
 
-        const items = await MenuItem.find(query).populate("image").sort({ displayOrder: 1, createdAt: -1 });
-        return JsonResponse.success(items, "Items fetched successfully", 200);
+        if (!items) {
+            items = await MenuItem.find({ restaurant: id }).populate("image").sort({ displayOrder: 1, createdAt: -1 });
+            await setCache(cacheKey, items);
+        }
+
+        let filteredItems = items;
+        if (categoryId) filteredItems = filteredItems.filter(i => i.category?.toString() === categoryId || i.category?._id?.toString() === categoryId);
+        if (subCategoryId) filteredItems = filteredItems.filter(i => i.subCategory?.toString() === subCategoryId || i.subCategory?._id?.toString() === subCategoryId);
+
+        return JsonResponse.success(filteredItems, "Items fetched successfully", 200);
     } catch (err) {
         return JsonResponse.error(err?.message || "Internal Server Error!", 500);
     }
@@ -66,17 +91,20 @@ export const POST = async (req, { params }) => {
         const { isValid, message } = validateRequiredFields(data, MENU_ITEM_POST_REQUIRED_FIELDS);
         
         if (!isValid) {
+            console.error("Validation failed:", message);
             return JsonResponse.error(message, 400);
         }
 
         const category = await Category.findOne({ _id: data.category, restaurant: id });
         if (!category) {
+            console.error("Invalid category:", data.category);
             return JsonResponse.error("Invalid category", 400);
         }
 
         if (data.subCategory) {
             const subCategory = await Category.findOne({ _id: data.subCategory, restaurant: id, parentCategory: data.category });
             if (!subCategory) {
+                console.error("Invalid subCategory:", data.subCategory, "with parent:", data.category);
                 return JsonResponse.error("Invalid subCategory", 400);
             }
         }
@@ -93,7 +121,7 @@ export const POST = async (req, { params }) => {
             name: data.name,
             description: data.description || "",
             image: data.image || null,
-            base_price: data.base_price,
+            base_price: calculateMinVariantPrice(data.variants, data.base_price),
             variants: data.variants || [],
             dietaryType: data.dietaryType,
             isAvailable: data.isAvailable ?? true,
@@ -103,6 +131,8 @@ export const POST = async (req, { params }) => {
 
         const newItem = await MenuItem.create(newItemData);
         const populatedItem = await MenuItem.findById(newItem._id).populate("image");
+        
+        await invalidateItemCache(id);
         return JsonResponse.success(populatedItem, "Item created successfully", 201);
     } catch (err) {
         return JsonResponse.error(err?.message || "Internal Server Error!", 500);
@@ -151,6 +181,10 @@ export const PUT = async (req, { params }) => {
             }
         }
 
+        if (data.variants !== undefined) {
+            data.base_price = calculateMinVariantPrice(data.variants, data.base_price);
+        }
+
         const updatedItem = await MenuItem.findOneAndUpdate(
             { _id: itemId, restaurant: id },
             { $set: data },
@@ -161,6 +195,7 @@ export const PUT = async (req, { params }) => {
             return JsonResponse.error("Item not found", 404);
         }
 
+        await invalidateItemCache(id);
         return JsonResponse.success(updatedItem, "Item updated successfully", 200);
     } catch (err) {
         return JsonResponse.error(err?.message || "Internal Server Error!", 500);
@@ -198,6 +233,7 @@ export const DELETE = async (req, { params }) => {
             return JsonResponse.error("Item not found", 404);
         }
 
+        await invalidateItemCache(id);
         return JsonResponse.success(deletedItem, "Item deleted successfully", 200);
     } catch (err) {
         return JsonResponse.error(err?.message || "Internal Server Error!", 500);

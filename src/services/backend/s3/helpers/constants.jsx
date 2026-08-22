@@ -11,8 +11,8 @@ export const ALLOWED_FOLDERS = [
   "logo",
   "cover",
   "gallery",
-  "menu",
-  "categories",
+  "menu/categories",
+  "menu/items",
   "staff-profiles",
   "user-profiles",
 ];

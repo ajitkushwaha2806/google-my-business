@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { CheckCircle2 } from "lucide-react";
 import ItemDetails from "./fragments/ItemDetails";
 import ItemVariants from "./fragments/ItemVariants";
+import { CheckCircle2, Loader2 } from "lucide-react";
+import { useItemVariants } from "./hooks/useItemVariants";
 import useNotification from "@/store/hooks/useNotification";
 
 export default function MenuItemRow({
@@ -16,10 +17,9 @@ export default function MenuItemRow({
         setItem(initialItem);
     }, [initialItem]);
 
-    const isEdited = JSON.stringify(item) !== JSON.stringify(initialItem);
+    const isEdited = JSON.stringify(item) !== JSON.stringify(initialItem) || item?.isTemp;
 
     const [isHovered, setIsHovered] = useState(false);
-
     const updateField = (field, value) => {
         setItem((prev) => ({
             ...prev,
@@ -29,95 +29,50 @@ export default function MenuItemRow({
 
     const variants = item?.variants || [];
 
-    const addVariantGroup = () => {
-        if (variants && variants.length >= 1) {
-            notification.error("Only a single variant property is allowed.", { duration: 5000 });
-            return;
+    const {
+        addVariantGroup,
+        updateVariantGroup,
+        deleteVariantGroup,
+        addVariantOption,
+        updateVariantOption,
+        deleteVariantOption,
+        addSuggestedVariant
+    } = useItemVariants(variants, updateField, notification);
+
+    const [isSaving, setIsSaving] = useState(false);
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            await onChange?.(item);
+        } finally {
+            setIsSaving(false);
         }
-        const newGroup = {
-            property_name: "New Group",
-            property_id: `temp-${crypto.randomUUID()}`,
-            options: []
-        };
-        updateField("variants", [...variants, newGroup]);
-    };
-
-    const updateVariantGroup = (groupIndex, field, value) => {
-        const newVariants = [...variants];
-        newVariants[groupIndex] = { ...newVariants[groupIndex], [field]: value };
-        updateField("variants", newVariants);
-    };
-
-    const deleteVariantGroup = (groupIndex) => {
-        const newVariants = variants.filter((_, idx) => idx !== groupIndex);
-        updateField("variants", newVariants);
-    };
-
-    const addVariantOption = (groupIndex) => {
-        const newVariants = [...variants];
-        const group = { ...newVariants[groupIndex] };
-        group.options = [
-            ...(group.options || []),
-            { name: "New Option", price: 0, is_default: false, option_id: `temp-${crypto.randomUUID()}` }
-        ];
-        newVariants[groupIndex] = group;
-        updateField("variants", newVariants);
-    };
-
-    const updateVariantOption = (groupIndex, optionIndex, field, value) => {
-        const newVariants = [...variants];
-        const group = { ...newVariants[groupIndex] };
-        const newOptions = [...(group.options || [])];
-        newOptions[optionIndex] = { ...newOptions[optionIndex], [field]: value };
-
-        group.options = newOptions;
-        newVariants[groupIndex] = group;
-        updateField("variants", newVariants);
-    };
-
-    const deleteVariantOption = (groupIndex, optionIndex) => {
-        const newVariants = [...variants];
-        const group = { ...newVariants[groupIndex] };
-        group.options = (group.options || []).filter((_, idx) => idx !== optionIndex);
-        newVariants[groupIndex] = group;
-        updateField("variants", newVariants);
-    };
-
-    const addSuggestedVariant = (suggestion) => {
-        if (variants && variants.length >= 1) {
-            notification.error("Only a single variant property is allowed.", { duration: 5000 });
-            return;
-        }
-        const newGroup = {
-            property_name: suggestion.property_name,
-            property_id: `temp-${crypto.randomUUID()}`,
-            options: suggestion.options.map(opt => ({
-                name: opt,
-                price: 0,
-                is_default: false,
-                option_id: `temp-${crypto.randomUUID()}`
-            }))
-        };
-        updateField("variants", [...variants, newGroup]);
     };
 
     return (
         <div
-            className={`group border rounded-xl p-3 transition-all relative ${
+            className={`group border rounded-xl p-3 transition-all duration-300 relative ${
                 item?.status === 'delete' ? "bg-red-50 border-red-300 pointer-events-none opacity-60" :
                 item?.id?.toString().startsWith("temp-") 
-                    ? "bg-green-50/50 border-green-300 hover:border-green-500"
-                    : "bg-white hover:border-orange-300"
+                    ? "bg-emerald-50/40 border-emerald-200 hover:border-emerald-400 shadow-sm"
+                    : "bg-white hover:border-orange-300 hover:shadow-md"
             }`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
             {isEdited && (
                 <button
-                    onClick={() => onChange?.(item)}
-                    className="absolute -top-3 -right-3 bg-primary text-primary-foreground h-8 px-4 rounded-full shadow-lg z-10 text-[11px] font-bold flex items-center gap-1.5 hover:bg-primary/90 transition-all hover:scale-105 active:scale-95"
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="absolute -top-3 -right-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white h-8 px-4 rounded-full shadow-lg shadow-orange-500/30 z-10 text-[11px] font-bold flex items-center gap-1.5 hover:from-orange-600 hover:to-orange-700 transition-all hover:scale-105 active:scale-95 disabled:opacity-70 disabled:pointer-events-none ring-2 ring-white"
                 >
-                    <CheckCircle2 size={14} strokeWidth={3} /> SAVE
+                    {isSaving ? (
+                        <Loader2 size={14} strokeWidth={3} className="animate-spin" />
+                    ) : (
+                        <CheckCircle2 size={14} strokeWidth={3} />
+                    )}
+                    {isSaving ? "SAVING..." : "SAVE"}
                 </button>
             )}
             

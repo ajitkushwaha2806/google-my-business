@@ -1,5 +1,5 @@
 import CategoryView from "../category-view";
-import { BULK_EDIT_MODES } from "./constant";
+import { BULK_EDIT_MODES } from "../../bulk-editor/helper/constant";
 
 export const renderViewContent = (props) => {
     const {

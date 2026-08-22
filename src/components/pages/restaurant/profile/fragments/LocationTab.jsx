@@ -42,13 +42,12 @@ const LocationTab = ({ locationData }) => {
     <form onSubmit={formik.handleSubmit} className="flex flex-col">
       <div className="mb-8">
         <h3 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Location Details</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage your restaurant's physical address and precise map coordinates.</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage your restaurant&apos;s physical address and precise map coordinates.</p>
       </div>
       
-      <div className="p-6 rounded-2xl border border-border/40 bg-card shadow-sm space-y-6">
-        {/* Street Address */}
+      <div className="space-y-6">
         <div className="relative group">
-          <div className="absolute -top-2.5 left-3 px-1.5 bg-card z-10">
+          <div className="absolute -top-2.5 left-3 px-1.5 bg-white dark:bg-zinc-950 z-10">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 group-focus-within:text-orange-600 transition-colors">Street Address</span>
           </div>
           <div className="relative flex items-center border border-gray-300 dark:border-gray-700 rounded-md focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all bg-white dark:bg-zinc-900/50">
@@ -68,9 +67,8 @@ const LocationTab = ({ locationData }) => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-          {/* City */}
           <div className="relative group">
-            <div className="absolute -top-2.5 left-3 px-1.5 bg-card z-10">
+            <div className="absolute -top-2.5 left-3 px-1.5 bg-white dark:bg-zinc-950 z-10">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 group-focus-within:text-orange-600 transition-colors">City</span>
             </div>
             <div className="relative flex items-center border border-gray-300 dark:border-gray-700 rounded-md focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all bg-white dark:bg-zinc-900/50">
@@ -89,9 +87,8 @@ const LocationTab = ({ locationData }) => {
             </div>
           </div>
 
-          {/* State */}
           <div className="relative group">
-            <div className="absolute -top-2.5 left-3 px-1.5 bg-card z-10">
+            <div className="absolute -top-2.5 left-3 px-1.5 bg-white dark:bg-zinc-950 z-10">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 group-focus-within:text-orange-600 transition-colors">State</span>
             </div>
             <div className="relative flex items-center border border-gray-300 dark:border-gray-700 rounded-md focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all bg-white dark:bg-zinc-900/50">
@@ -112,9 +109,8 @@ const LocationTab = ({ locationData }) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-          {/* Postal Code */}
           <div className="relative group">
-            <div className="absolute -top-2.5 left-3 px-1.5 bg-card z-10">
+            <div className="absolute -top-2.5 left-3 px-1.5 bg-white dark:bg-zinc-950 z-10">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 group-focus-within:text-orange-600 transition-colors">Postal Code</span>
             </div>
             <div className="relative flex items-center border border-gray-300 dark:border-gray-700 rounded-md focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all bg-white dark:bg-zinc-900/50">
@@ -133,9 +129,8 @@ const LocationTab = ({ locationData }) => {
             </div>
           </div>
 
-          {/* Country */}
           <div className="relative group">
-            <div className="absolute -top-2.5 left-3 px-1.5 bg-card z-10">
+            <div className="absolute -top-2.5 left-3 px-1.5 bg-white dark:bg-zinc-950 z-10">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 group-focus-within:text-orange-600 transition-colors">Country</span>
             </div>
             <div className="relative flex items-center border border-gray-300 dark:border-gray-700 rounded-md focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all bg-white dark:bg-zinc-900/50">
@@ -156,7 +151,7 @@ const LocationTab = ({ locationData }) => {
         </div>
       </div>
 
-      <div className="mt-8 p-6 rounded-2xl border border-border/40 bg-muted/10 shadow-sm space-y-6">
+      <div className="mt-8 space-y-6">
         <h4 className="text-lg font-semibold tracking-tight text-gray-800 dark:text-gray-100 flex items-center gap-2">
           <MapPin className="w-5 h-5 text-orange-500" />
           Map Coordinates
@@ -164,7 +159,7 @@ const LocationTab = ({ locationData }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
           {/* Latitude */}
           <div className="relative group">
-            <div className="absolute -top-2.5 left-3 px-1.5 bg-white dark:bg-zinc-900 z-10">
+            <div className="absolute -top-2.5 left-3 px-1.5 bg-white dark:bg-zinc-950 z-10">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 group-focus-within:text-orange-600 transition-colors">Latitude</span>
             </div>
             <div className="relative flex items-center border border-gray-300 dark:border-gray-700 rounded-md focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all bg-white dark:bg-zinc-900/50">
@@ -184,9 +179,8 @@ const LocationTab = ({ locationData }) => {
             <p className="text-[11px] text-muted-foreground mt-1.5 pl-1">Used for map pins and distance calculations.</p>
           </div>
 
-          {/* Longitude */}
           <div className="relative group">
-            <div className="absolute -top-2.5 left-3 px-1.5 bg-white dark:bg-zinc-900 z-10">
+            <div className="absolute -top-2.5 left-3 px-1.5 bg-white dark:bg-zinc-950 z-10">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 group-focus-within:text-orange-600 transition-colors">Longitude</span>
             </div>
             <div className="relative flex items-center border border-gray-300 dark:border-gray-700 rounded-md focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all bg-white dark:bg-zinc-900/50">

@@ -77,11 +77,11 @@ export const useCategory = (resId) => {
         rawCategories,
         isLoading,
         error,
-        addCategory: createMutation.mutate,
+        addCategory: createMutation.mutateAsync,
         isAdding: createMutation.isPending,
-        updateCategory: updateMutation.mutate,
+        updateCategory: updateMutation.mutateAsync,
         isUpdating: updateMutation.isPending,
-        deleteCategory: deleteMutation.mutate,
+        deleteCategory: deleteMutation.mutateAsync,
         isDeleting: deleteMutation.isPending,
     }; 
 };

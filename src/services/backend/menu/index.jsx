@@ -7,7 +7,7 @@ export const MenuService = {
     const categories = await Category.find({
       restaurant: resId,
       parentCategory: null,
-    }).lean();
+    }).populate("image").lean();
 
     const categoriesWithImages = await Promise.all(
       categories.map(async (category) => {

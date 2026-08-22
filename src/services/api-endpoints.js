@@ -23,7 +23,17 @@ export const API_ENDPOINTS = {
             UPDATE: (resId) => `/api/restaurant/${resId}/menu/item`,
             DELETE: (resId) => `/api/restaurant/${resId}/menu/item`,
         },
-        IMPORT_ZOMATO: (resId) => `/api/restaurant/${resId}/menu/import/zomato`
+        IMPORT_ZOMATO: (resId) => `/api/restaurant/${resId}/menu/import/zomato`,
+        BULK_UPDATE_PRICE: (resId) => `/api/restaurant/${resId}/menu/bulk-update/price`,
+        BULK_UPDATE_DESCRIPTION: (resId) => `/api/restaurant/${resId}/menu/bulk-update/description`,
+        BULK_UPDATE_STRUCTURE: (resId) => `/api/restaurant/${resId}/menu/bulk-update/structure`,
+        BULK_UPDATE_ADDONS: (resId) => `/api/restaurant/${resId}/menu/bulk-update/addons`,
+        ADDON_GROUPS: {
+            GET_ALL: (resId) => `/api/restaurant/${resId}/menu/addon-groups`,
+            CREATE: (resId) => `/api/restaurant/${resId}/menu/addon-groups`,
+            UPDATE: (resId) => `/api/restaurant/${resId}/menu/addon-groups`,
+            DELETE: (resId) => `/api/restaurant/${resId}/menu/addon-groups`,
+        }
     },
     STAFF: {
         CREATE: (resId) => `/api/restaurant/${resId}/staff`,

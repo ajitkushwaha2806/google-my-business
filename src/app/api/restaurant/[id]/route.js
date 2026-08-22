@@ -3,8 +3,8 @@ import ImageAsset from "@/models/Image";
 import Restaurant from "@/models/Restaurant";
 import { JsonResponse } from "@/lib/api/responseHandler";
 import { getRestaurant } from "@/lib/api/hooks/getRestaurant";
-import { getCache, setCache, deleteCache } from "@/services/backend/redis/cache.service";
-
+import { getCache, setCache } from "@/services/backend/redis/cache.service";
+import { getRestaurantDetailsCacheKey, invalidateRestaurantCache } from "@/lib/api/helpers/cacheKeys";
 
 const ALLOWED_UPDATE_FIELDS = [
     "name", "slug", "logo", "address", "phone", "domain",
@@ -49,8 +49,7 @@ export const PUT = async (req, { params }) => {
             return JsonResponse.error("Restaurant not found.", 404);
         }
 
-        await deleteCache(`restaurants:user:${user.id}`);
-        await deleteCache(`restaurant:details:${id}`);
+        await invalidateRestaurantCache(user.id, id);
 
         return JsonResponse.success(
             { restaurant: updatedRestaurant }, 
@@ -75,7 +74,7 @@ export const GET = async (req, { params }) => {
             return JsonResponse.error("Please login first to continue!", 401);
         }
 
-        const cacheKey = `restaurant:details:${id}`;
+        const cacheKey = getRestaurantDetailsCacheKey(id);
         const cachedDetails = await getCache(cacheKey);
 
         if (cachedDetails) {

@@ -5,11 +5,13 @@ import { Input } from "@/components/ui/input";
 
 export default function InlineInput({
     placeholder,
+    defaultValue = "",
     onSubmit,
     onCancel,
     autoFocus = true,
+    disabled = false,
 }) {
-    const [value, setValue] = useState("");
+    const [value, setValue] = useState(defaultValue);
 
     const handleSubmit = () => {
         const name = value.trim();
@@ -22,6 +24,7 @@ export default function InlineInput({
 
     return (
         <Input
+            disabled={disabled}
             autoFocus={autoFocus}
             value={value}
             placeholder={placeholder}

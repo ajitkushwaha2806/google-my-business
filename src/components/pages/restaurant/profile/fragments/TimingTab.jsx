@@ -25,11 +25,16 @@ const TimingTab = ({ timingsData }) => {
     initialValues: {
       currentlyOpen: timingsData?.currentlyOpen ?? true,
       days: Array.isArray(timingsData?.days) && timingsData.days.length > 0 
-        ? timingsData.days 
+        ? timingsData.days.map(d => ({
+            day: d.day,
+            isOpen: d.isOpen ?? true,
+            openTime: d.openTime || "10:00",
+            closeTime: d.closeTime || "22:00"
+          }))
         : DAYS.map(day => ({
             day,
             isOpen: true,
-            openTime: "09:00",
+            openTime: "10:00",
             closeTime: "22:00"
           }))
     },
@@ -46,7 +51,7 @@ const TimingTab = ({ timingsData }) => {
     <form onSubmit={formik.handleSubmit} className="flex flex-col">
       <div className="mb-8">
         <h3 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Operating Hours</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Configure your daily timings and manage your store's live status.</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Configure your daily timings and manage your store&apos;s live status.</p>
       </div>
       
       <div className="space-y-8"> 

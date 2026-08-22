@@ -4,8 +4,24 @@ import { usePathname } from "next/navigation";
 import { Breadcrumbs } from "../global/breadcrumb";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
+const HIDE_SIDEBAR_ROUTES = [
+  "/restaurant/onboarding",
+];
+
 export function SidebarLayout({ children }) {
   const pathname = usePathname();
+  const shouldHideSidebar = HIDE_SIDEBAR_ROUTES.some(route => pathname?.startsWith(route));
+
+  if (shouldHideSidebar) {
+    return (
+      <div className="min-h-screen w-full bg-gray-50/30 dark:bg-zinc-950 flex flex-col">
+        <main className="flex-1 overflow-auto">
+          {children}
+        </main>
+      </div>
+    );
+  }
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-gray-50/30 dark:bg-zinc-950">

@@ -5,7 +5,8 @@ import ImageAsset from "@/models/Image";
 import Restaurant from "@/models/Restaurant";
 import { JsonResponse } from "@/lib/api/responseHandler";
 import { validateRequiredFields } from "@/lib/api/helpers/validator";
-import { getCache, setCache, deleteCache } from "@/services/backend/redis/cache.service";
+import { getCache, setCache } from "@/services/backend/redis/cache.service";
+import { getStaffCacheKey, invalidateStaffCache } from "@/lib/api/helpers/cacheKeys";
 
 
 const STAFF_POST_REQUIRED_FIELDS = ["name", "email", "role", "password"];
@@ -14,7 +15,7 @@ export const GET = async (req, { params }) => {
     try {
         await dbConnect();
         const { id: restaurantId } = await params;
-        const cacheKey = `restaurant:staff:${restaurantId}`;
+        const cacheKey = getStaffCacheKey(restaurantId);
         const cachedStaffList = await getCache(cacheKey);
         if (cachedStaffList) {
             return JsonResponse.success(cachedStaffList, "Staff list fetched successfully (cached)");
@@ -85,7 +86,7 @@ export const POST = async (req, { params }) => {
             status: status || "ACTIVE"
         });
         
-        await deleteCache(`restaurant:staff:${restaurantId}`);
+        await invalidateStaffCache(restaurantId);
         
         const populatedStaff = await Staff.findById(newStaff._id).populate("image").populate("role", "name description isSystemRole").select("-passwordHash");
         return JsonResponse.success(populatedStaff, "Staff member added successfully", 201);

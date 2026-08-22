@@ -2,13 +2,14 @@ import dbConnect from "@/lib/db";
 import { Role } from "@/models/Role";
 import { Permission } from "@/models/Permission";
 import { JsonResponse } from "@/lib/api/responseHandler";
+import { getRolesCacheKey } from "@/lib/api/helpers/cacheKeys";
 import { getCache, setCache } from "@/services/backend/redis/cache.service";
 
 export const GET = async (req) => {
     try {
         await dbConnect();
         
-        const cacheKey = "roles:all";
+        const cacheKey = getRolesCacheKey();
         const cachedRoles = await getCache(cacheKey);
         
         if (cachedRoles) {
@@ -19,7 +20,7 @@ export const GET = async (req) => {
             .populate("permissions", "code description")
             .lean();
             
-        await setCache(cacheKey, roles, 3600); // cache for 1 hour
+        await setCache(cacheKey, roles, 3600); 
             
         return JsonResponse.success(roles);
     } catch (error) {

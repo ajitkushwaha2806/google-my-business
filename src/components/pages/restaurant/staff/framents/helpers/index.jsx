@@ -9,7 +9,7 @@ export const TabContent = ({ activeTab, handleAddStaff, handleEditStaff }) => {
     const { restaurantId } = useRestaurant();
     const { staffList, isLoading, error } = useStaff(restaurantId);
 
-    if (isLoading) {
+    if (isLoading || !restaurantId) {
         return (
             <div className="flex items-center justify-center min-h-[300px] w-full">
                 <Loader />

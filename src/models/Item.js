@@ -62,6 +62,10 @@ const MenuItemSchema = new Schema(
       required: [true, "Base price is required"],
       min: [0, "Price cannot be negative"],
     },
+    addonGroups: [{
+      type: Types.ObjectId,
+      ref: "AddonGroup",
+    }],
 
     variants: [VariantSchema],
     dietaryType: {

@@ -1,17 +1,23 @@
-import { Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Trash2, Loader2 } from "lucide-react";
+import ItemImageUpload from "./ItemImageUpload";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getImageUrl } from "@/lib/utils";
 
 export default function ItemDetails({ item, updateField, onDelete }) {
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDelete = async () => {
+        setIsDeleting(true);
+        try {
+            await onDelete?.(item);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     return (
-        <div className="flex gap-3">
-            <div className="shrink-0 rounded-lg overflow-hidden border transition-all duration-200 group/img h-16 w-16 relative">
-                <img
-                    src={getImageUrl(item?.image, true, "thumbnail") || "https://placehold.co/200x200?text=Food"}
-                    alt={item?.name || "Item"}
-                    className="w-full h-full object-cover"
-                />
-            </div>
+        <div className="flex gap-4">
+            <ItemImageUpload item={item} updateField={updateField} />
 
             <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
                 <div className="space-y-2">
@@ -72,11 +78,16 @@ export default function ItemDetails({ item, updateField, onDelete }) {
             </div>
             <div className="shrink-0 flex items-center gap-1">
                 <button
-                    onClick={() => onDelete?.(item)}
-                    className="h-8 w-8 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-50"
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="h-8 w-8 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-50 disabled:opacity-50 disabled:hover:bg-transparent"
                     title="Delete Item"
                 >
-                    <Trash2 size={16} />
+                    {isDeleting ? (
+                        <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                        <Trash2 size={16} />
+                    )}
                 </button>
             </div>
         </div>

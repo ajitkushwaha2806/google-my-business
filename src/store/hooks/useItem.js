@@ -1,5 +1,5 @@
-import { MenuService } from "@/services/frontend/menu";
 import useNotification from "./useNotification";
+import { MenuService } from "@/services/frontend/menu";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useItem = (resId, filters = {}) => {
@@ -49,11 +49,11 @@ export const useItem = (resId, filters = {}) => {
         items: itemData?.data || [],
         isLoading,
         error,
-        addItem: createMutation.mutate,
+        addItem: createMutation.mutateAsync,
         isAdding: createMutation.isPending,
-        updateItem: updateMutation.mutate,
+        updateItem: updateMutation.mutateAsync,
         isUpdating: updateMutation.isPending,
-        deleteItem: deleteMutation.mutate,
+        deleteItem: deleteMutation.mutateAsync,
         isDeleting: deleteMutation.isPending,
     };
 };

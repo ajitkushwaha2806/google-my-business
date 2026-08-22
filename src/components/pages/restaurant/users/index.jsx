@@ -49,7 +49,7 @@ const UserManagement = () => {
 
                     <div className="p-6">
                         <div className="border border-gray-200 dark:border-zinc-800 rounded-md overflow-hidden bg-white">
-                            {isLoading ? (
+                            {isLoading || !restaurantId ? (
                                 <div className="flex items-center justify-center min-h-[300px] w-full">
                                     <Loader />
                                 </div>

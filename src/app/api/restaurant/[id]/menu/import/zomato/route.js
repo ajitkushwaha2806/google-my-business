@@ -7,6 +7,7 @@ import Category from "@/models/Category";
 import ImageAsset from "@/models/Image";
 import { uploadToS3 } from "@/services/backend/s3";
 import { JsonResponse } from "@/lib/api/responseHandler";
+import { invalidateCategoryCache, invalidateItemCache } from "@/lib/api/helpers/cacheKeys";
 
 const parseVariantGroups = (itemData) => {
     if (!itemData || !Array.isArray(itemData.groups)) {
@@ -34,6 +35,25 @@ const parseVariantGroups = (itemData) => {
         .filter(Boolean);
 };
 
+const getNomalisedUrl = (url) => {
+  url = url.trim();
+  if (!/^https?:\/\//i.test(url)) {
+    url = `https://${url}`;
+  }
+
+  const parsed = new URL(url);
+  const domain = `${parsed.protocol}//${parsed.host}`;
+  const parts = parsed.pathname.split("/").filter(Boolean);
+
+  if (parts.length < 2) {
+    throw new Error("Invalid URL: city and outlet_name are required");
+  }
+
+  const city = parts[0];
+  const outletName = parts[1];
+  return `${domain}/${city}/${outletName}/order`;
+}
+
 export const GET = async (req, { params }) => {
     try {
         await dbConnect();
@@ -49,24 +69,7 @@ export const GET = async (req, { params }) => {
             return JsonResponse.error("pageUrl is required", 400);
         }
 
-        let pageUrl = pageUrlParam.trim();
-        try {
-            if (pageUrl.startsWith("http")) {
-                const parsedUrl = new URL(pageUrl);
-                pageUrl = parsedUrl.pathname;
-            }
-            
-            const cleanPath = pageUrl.replace(/\/$/, "");
-            if (!cleanPath.endsWith("/order")) {
-                pageUrl = cleanPath + "/order";
-            }
-            
-            if (!pageUrl.startsWith("/")) {
-                pageUrl = "/" + pageUrl;
-            }
-        } catch (error) {
-            return JsonResponse.error("Invalid Zomato URL provided", 400);
-        }
+        let pageUrl = getNomalisedUrl(pageUrlParam)
 
         const response = await axios.get(
             "https://www.zomato.com/webroutes/getPage",
@@ -87,11 +90,7 @@ export const GET = async (req, { params }) => {
         );
 
         const menus = response?.data?.page_data?.order?.menuList?.menus || [];
-        const modifierGroups = response?.data?.page_data?.order?.menuList?.modifierGroups || {};
 
-        console.log("modifier Groupd" , modifierGroups)
-
-        fs.writeFileSync('test.json', JSON.stringify(response?.data, null, 2));
         let categoriesImported = 0;
         let itemsImported = 0;
 
@@ -149,7 +148,7 @@ export const GET = async (req, { params }) => {
                             const ext = extMatch ? extMatch[0].toLowerCase() : '.jpg';
                             const s3Result = await uploadToS3({
                                 file: buffer,
-                                folder: `restaurants/${id}/menu`,
+                                folder: `restaurant/${id}/menu/items`,
                                 fileName: `item-${Date.now()}-${crypto.randomUUID()}${ext}`,
                             });
                             
@@ -189,6 +188,9 @@ export const GET = async (req, { params }) => {
                 }
             }
         }
+
+        await invalidateCategoryCache(id);
+        await invalidateItemCache(id);
 
         return JsonResponse.success({
             stats: {

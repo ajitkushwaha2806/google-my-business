@@ -5,7 +5,8 @@ import { getUser } from "@/lib/api/hooks/getUser";
 import { clerkClient } from "@clerk/nextjs/server";
 import { JsonResponse } from "@/lib/api/responseHandler";
 import { validateRequiredFields } from "@/lib/api/helpers/validator";
-import { getCache, setCache, deleteCache } from "@/services/backend/redis/cache.service";
+import { getCache, setCache } from "@/services/backend/redis/cache.service";
+import { getRestaurantCacheKey, invalidateRestaurantCache } from "@/lib/api/helpers/cacheKeys";
 
 
 const RESTAURANT_POST_REQUIRED_FIELDS = ["name", "phone", "email", "slug"];
@@ -51,7 +52,7 @@ export const POST = async (req) => {
         });
 
         await newRestaurant.save();
-        await deleteCache(`restaurants:user:${user.id}`);
+        await invalidateRestaurantCache(user.id);
         const client = await clerkClient();
         return JsonResponse.success({ restaurantId: newRestaurant._id }, "Restaurant created successfully", 200);
     } catch (err) {
@@ -74,7 +75,7 @@ export const GET = async () => {
             );
         }
 
-        const cacheKey = `restaurants:user:${user.id}`;
+        const cacheKey = getRestaurantCacheKey(user.id);
         const cachedRestaurants = await getCache(cacheKey);
 
         if (cachedRestaurants) {

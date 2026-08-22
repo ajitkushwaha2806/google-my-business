@@ -43,5 +43,39 @@ export const MenuService = {
     importZomato: async (resId, pageUrl) => {
         const response = await axios.get(`${API_ENDPOINTS.MENU.IMPORT_ZOMATO(resId)}?pageUrl=${encodeURIComponent(pageUrl)}`);
         return response.data;
+    },
+    bulkUpdatePrice: async (resId, data) => {
+        const response = await axios.put(API_ENDPOINTS.MENU.BULK_UPDATE_PRICE(resId), data);
+        return response.data;
+    },
+    bulkUpdateDescription: async (resId, data) => {
+        const response = await axios.put(API_ENDPOINTS.MENU.BULK_UPDATE_DESCRIPTION(resId), data);
+        return response.data;
+    },
+    bulkUpdateStructure: async (resId, data) => {
+        const response = await axios.put(API_ENDPOINTS.MENU.BULK_UPDATE_STRUCTURE(resId), data);
+        return response.data;
+    },
+    bulkUpdateAddons: async (resId, data) => {
+        const response = await axios.put(API_ENDPOINTS.MENU.BULK_UPDATE_ADDONS(resId), data);
+        return response.data;
+    },
+    addonGroup: {
+        create: async (resId, data) => {
+            const response = await axios.post(API_ENDPOINTS.MENU.ADDON_GROUPS.CREATE(resId), data);
+            return response.data;
+        },
+        getAll: async (resId) => {
+            const response = await axios.get(API_ENDPOINTS.MENU.ADDON_GROUPS.GET_ALL(resId));
+            return response.data;
+        },
+        update: async (resId, groupId, data) => {
+            const response = await axios.put(`${API_ENDPOINTS.MENU.ADDON_GROUPS.UPDATE(resId)}?groupId=${groupId}`, data);
+            return response.data;
+        },
+        delete: async (resId, groupId) => {
+            const response = await axios.delete(`${API_ENDPOINTS.MENU.ADDON_GROUPS.DELETE(resId)}?groupId=${groupId}`);
+            return response.data;
+        }
     }
 };

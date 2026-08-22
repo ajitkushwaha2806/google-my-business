@@ -26,6 +26,7 @@ export default function CategoryCard({
 }) {
     const [isEditing, setIsEditing] = useState(false);
     const [addingSubCategory, setAddingSubCategory] = useState(false);
+    const [isSavingSubCategory, setIsSavingSubCategory] = useState(false);
 
     if (!category) return null;
 
@@ -82,7 +83,7 @@ export default function CategoryCard({
                                 }
                             }}
                         >
-                            <div className="w-full h-full" />
+                            <button type="button" aria-label="Edit category" className="w-full h-full cursor-default" />
                         </CategoryFormPopover>
                     </div>
                 ) : (
@@ -138,14 +139,28 @@ export default function CategoryCard({
                                 <InlineInput
                                     autoFocus
                                     placeholder="Subcategory name"
+                                    disabled={isSavingSubCategory}
                                     onSubmit={(name) => {
                                         const trimmed = name.trim();
                                         if (trimmed && addSubCategory) {
-                                            addSubCategory({ name: trimmed, parentCategory: category.id });
+                                            setIsSavingSubCategory(true);
+                                            addSubCategory(
+                                                { name: trimmed, parentCategory: category.id },
+                                                {
+                                                    onSuccess: () => {
+                                                        setAddingSubCategory(false);
+                                                        setIsSavingSubCategory(false);
+                                                    },
+                                                    onError: () => {
+                                                        setIsSavingSubCategory(false);
+                                                    }
+                                                }
+                                            );
+                                        } else {
+                                            setAddingSubCategory(false);
                                         }
-                                        setAddingSubCategory(false);
                                     }}
-                                    onCancel={() => setAddingSubCategory(false)}
+                                    onCancel={() => !isSavingSubCategory && setAddingSubCategory(false)}
                                 />
                             </div>
                         ) : (

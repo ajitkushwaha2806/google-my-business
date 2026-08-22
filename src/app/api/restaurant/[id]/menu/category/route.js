@@ -1,9 +1,11 @@
 import dbConnect from "@/lib/db";
 import Category from "@/models/Category";
-import Restaurant from "@/models/Restaurant"
+import Restaurant from "@/models/Restaurant";
 import { getUser } from "@/lib/api/hooks/getUser";
 import { JsonResponse } from "@/lib/api/responseHandler";
 import { validateRequiredFields } from "@/lib/api/helpers/validator";
+import { getCache, setCache } from "@/services/backend/redis/cache.service";
+import { getCategoriesCacheKey, invalidateCategoryCache } from "@/lib/api/helpers/cacheKeys";
 
 const MENU_CATEGORY_POST_REQUIRED_FIELDS = ["name"];
 
@@ -26,7 +28,14 @@ export const GET = async (req, { params }) => {
             return JsonResponse.error("Restaurant not found or unauthorized", 404);
         }
 
-        const categories = await Category.find({ restaurant: id }).sort({ displayOrder: 1, createdAt: -1  });
+        const cacheKey = getCategoriesCacheKey(id);
+        const cachedCategories = await getCache(cacheKey);
+        if (cachedCategories) {
+            return JsonResponse.success(cachedCategories, "Categories fetched successfully (cached)", 200);
+        }
+
+        const categories = await Category.find({ restaurant: id }).populate("image").sort({ displayOrder: 1, createdAt: -1 });
+        await setCache(cacheKey, categories, 3600);
         return JsonResponse.success(categories, "Categories fetched successfully", 200);
     } catch (err) {
         return JsonResponse.error(err?.message || "Internal Server Error!", 500);
@@ -68,6 +77,8 @@ export const POST = async (req, { params }) => {
             image: image || null,
             parentCategory: parentCategory || null,
         });
+
+        await invalidateCategoryCache(id);
         return JsonResponse.success(newCategory, "Category created successfully", 201);
     } catch (err) {
         return JsonResponse.error(err?.message || "Internal Server Error!", 500);
@@ -113,6 +124,7 @@ export const PUT = async (req, { params }) => {
         if (data.parentCategory !== undefined) category.parentCategory = data.parentCategory;
 
         await category.save();
+        await invalidateCategoryCache(id);
 
         return JsonResponse.success(category, "Category updated successfully", 200);
     } catch (err) {
@@ -152,7 +164,7 @@ export const DELETE = async (req, { params }) => {
         }
 
         await Category.deleteOne({ _id: categoryId });
-
+        await invalidateCategoryCache(id);
         return JsonResponse.success(null, "Category deleted successfully", 200);
     } catch (err) {
         return JsonResponse.error(err?.message || "Internal Server Error!", 500);

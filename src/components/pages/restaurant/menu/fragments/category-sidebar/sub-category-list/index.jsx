@@ -15,6 +15,7 @@ export default function SubCategoryList({
     deleteSubCategory,
 }) {
     const [editingId, setEditingId] = useState(null);
+    const [isSavingId, setIsSavingId] = useState(null);
 
     if (subcategories.length === 0) return null;
 
@@ -40,14 +41,28 @@ export default function SubCategoryList({
                                 <InlineInput
                                     autoFocus
                                     defaultValue={sub.name}
+                                    disabled={isSavingId === sub.id}
                                     onSubmit={(name) => {
                                         const trimmed = name.trim();
                                         if (trimmed && updateSubCategory) {
-                                            updateSubCategory({ categoryId: sub.id, data: { name: trimmed } });
+                                            setIsSavingId(sub.id);
+                                            updateSubCategory(
+                                                { categoryId: sub.id, data: { name: trimmed } },
+                                                {
+                                                    onSuccess: () => {
+                                                        setEditingId(null);
+                                                        setIsSavingId(null);
+                                                    },
+                                                    onError: () => {
+                                                        setIsSavingId(null);
+                                                    }
+                                                }
+                                            );
+                                        } else {
+                                            setEditingId(null);
                                         }
-                                        setEditingId(null);
                                     }}
-                                    onCancel={() => setEditingId(null)}
+                                    onCancel={() => isSavingId !== sub.id && setEditingId(null)}
                                 />
                             </div>
                         ) : (

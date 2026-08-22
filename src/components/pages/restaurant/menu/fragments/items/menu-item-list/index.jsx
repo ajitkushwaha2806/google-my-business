@@ -8,24 +8,35 @@ import { UtensilsCrossed, Plus } from "lucide-react";
 import { useRestaurant } from "@/store/hooks/useRestaurant";
 
 export default function MenuItemList({
+    activeCategoryId,
     activeSubCategoryId,
 }) {
     const { restaurantId } = useRestaurant();
     const { items, isLoading, addItem, updateItem, deleteItem } = useItem(restaurantId, activeSubCategoryId ? { subCategoryId: activeSubCategoryId } : {});
+    const [tempItems, setTempItems] = React.useState([]);
+
+    React.useEffect(() => {
+        setTempItems([]);
+    }, [activeSubCategoryId]);
     
     const handleAddItem = () => {
-        if (!activeSubCategoryId) return;
+        if (!activeSubCategoryId || !activeCategoryId) return;
 
-        addItem({
-            subCategory: activeSubCategoryId,
-            category: items?.[0]?.category || undefined, 
-            name: "New Item",
-            base_price: 0,
-            description: "",
-            dietaryType: "veg",
-            isAvailable: true,
-            variants: [],
-        });
+        setTempItems(prev => [
+            {
+                id: `temp-${crypto.randomUUID()}`,
+                subCategory: activeSubCategoryId,
+                category: activeCategoryId, 
+                name: "New Item",
+                base_price: 0,
+                description: "",
+                dietaryType: "veg",
+                isAvailable: true,
+                variants: [],
+                isTemp: true,
+            },
+            ...prev
+        ]);
     };
 
     return (
@@ -57,7 +68,7 @@ export default function MenuItemList({
                     <div className="flex h-full items-center justify-center w-full">
                         <Loader />
                     </div>
-                ) : items.length === 0 ? (
+                ) : items.length === 0 && tempItems.length === 0 ? (
                     <div className="flex h-full flex-col items-center justify-center text-muted-foreground gap-4">
                         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
                             <UtensilsCrossed className="h-8 w-8 text-muted-foreground/50" />
@@ -69,6 +80,23 @@ export default function MenuItemList({
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 gap-4 pb-20">
+                        {tempItems.map((item) => (
+                            <MenuItemRow
+                                key={item.id}
+                                item={item}
+                                onChange={(updatedItem) => {
+                                    const { id, isTemp, ...dataToSave } = updatedItem;
+                                    return addItem(dataToSave, {
+                                        onSuccess: () => {
+                                            setTempItems((prev) => prev.filter((i) => i.id !== item.id));
+                                        }
+                                    });
+                                }}
+                                onDelete={() =>
+                                    setTempItems((prev) => prev.filter((i) => i.id !== item.id))
+                                }
+                            />
+                        ))}
                         {items.map((item) => (
                             <MenuItemRow
                                 key={item.id}

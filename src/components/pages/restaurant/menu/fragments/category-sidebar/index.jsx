@@ -10,14 +10,16 @@ export default function CategorySidebar({
     activeCategory,
     setActiveCategory,
     activeSubCategory,
-    setActiveSubCategory
+    setActiveSubCategory,
+    activeView,
+    setActiveView,
+    activeBulkMode,
+    setActiveBulkMode
 }) {
     const { restaurantId } = useRestaurant();
     const { addCategory } = useCategory(restaurantId);
 
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [activeView, setActiveView] = useState("MENU");
-    const [activeBulkMode, setActiveBulkMode] = useState(null);
     return (
         <div className={`relative flex h-full transition-all duration-300 ${isCollapsed ? 'w-0' : 'w-[300px]'} shrink-0 z-20`}>
             <button
