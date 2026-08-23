@@ -1,4 +1,4 @@
-import { deleteCache } from "@/services/backend/redis/cache.service";
+import { deleteCache, deleteCacheByPattern } from "@/services/backend/redis/cache.service";
 
 export const getRestaurantCacheKey = (userId) => `restaurant:user:${userId}`;
 export const getRestaurantDetailsCacheKey = (restaurantId) => `restaurant:details:${restaurantId}`;
@@ -41,4 +41,8 @@ export const invalidateAddonGroupCache = async (restaurantId) => {
 
 export const invalidateTableCache = async (restaurantId) => {
     if (restaurantId) await deleteCache(getTablesCacheKey(restaurantId));
+};
+
+export const invalidateOrderCache = async (restaurantId) => {
+    if (restaurantId) await deleteCacheByPattern(`restaurant:${restaurantId}:orders:*`);
 };

@@ -1,8 +1,9 @@
 "use client";
 import { Search, X } from "lucide-react";
 import { ORDER_TAB_FILTERS } from "../helpers/constants";
+import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 
-const OrderPageHeader = ({ filter, setFilter, searchQuery, setSearchQuery, onSearch }) => {
+const OrderPageHeader = ({ filter, setFilter, searchQuery, setSearchQuery, onSearch, dateRange, setDateRange }) => {
     return (
         <div className="space-y-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -42,6 +43,9 @@ const OrderPageHeader = ({ filter, setFilter, searchQuery, setSearchQuery, onSea
                             <X size={16} />
                         </button>
                     )}
+                </div>
+                <div className="flex-shrink-0">
+                    <DatePickerWithRange date={dateRange} setDate={setDateRange} />
                 </div>
             </div>
 

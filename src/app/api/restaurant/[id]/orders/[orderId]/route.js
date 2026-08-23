@@ -1,8 +1,13 @@
 import dbConnect from "@/lib/db";
+import Table from "@/models/Table";
+import MenuItem from "@/models/Item";
+import { User } from "@/models/User";
+import { Staff } from "@/models/Staff";
 import Restaurant from "@/models/Restaurant";
 import { getUser } from "@/lib/api/hooks/getUser";
 import Order, { OrderStatus } from "@/models/Order";
 import { JsonResponse } from "@/lib/api/responseHandler";
+import { invalidateOrderCache } from "@/lib/api/helpers/cacheKeys";
 
 export const GET = async (req, { params }) => {
     try {
@@ -63,6 +68,8 @@ export const PATCH = async (req, { params }) => {
             return JsonResponse.error("Order not found", 404);
         }
 
+        const staff = await Staff.findOne({ clerkUserId: user.id, restaurant: id });
+
         const data = await req.json();
         if (data.status) {
             if (!Object.values(OrderStatus).includes(data.status)) {
@@ -71,7 +78,7 @@ export const PATCH = async (req, { params }) => {
             order.status = data.status;
             order.statusHistory.push({
                 status: data.status,
-                updatedBy: user.id
+                updatedBy: staff ? staff._id : null
             });
         }
 
@@ -84,6 +91,7 @@ export const PATCH = async (req, { params }) => {
         }
 
         await order.save();
+        await invalidateOrderCache(id);
 
         return JsonResponse.success(order, "Order updated successfully", 200);
     } catch (err) {

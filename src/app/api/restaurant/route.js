@@ -1,6 +1,8 @@
 import dbConnect from "@/lib/db";
 import ImageAsset from "@/models/Image";
 import Restaurant from "@/models/Restaurant";
+import { Role } from "@/models/Role";
+import { Staff } from "@/models/Staff";
 import { getUser } from "@/lib/api/hooks/getUser";
 import { clerkClient } from "@clerk/nextjs/server";
 import { JsonResponse } from "@/lib/api/responseHandler";
@@ -52,6 +54,27 @@ export const POST = async (req) => {
         });
 
         await newRestaurant.save();
+
+        let ownerRole = await Role.findOne({ name: "OWNER" });
+        if (!ownerRole) {
+            ownerRole = new Role({
+                name: "OWNER",
+                description: "Restaurant Owner",
+                isSystemRole: true
+            });
+            await ownerRole.save();
+        }
+
+        const newStaff = new Staff({
+            email: user.email,
+            name: user.name,
+            role: ownerRole._id,
+            restaurant: newRestaurant._id,
+            status: "ACTIVE",
+            clerkUserId: user.id
+        });
+        await newStaff.save();
+
         await invalidateRestaurantCache(user.id);
         const client = await clerkClient();
         return JsonResponse.success({ restaurantId: newRestaurant._id }, "Restaurant created successfully", 200);

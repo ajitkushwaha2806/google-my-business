@@ -1,8 +1,10 @@
 import crypto from "crypto";
+import mongoose from "mongoose";
 import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
 import Table from "@/models/Table";
 import { User } from "@/models/User";
+import MenuItem from "@/models/Item";
 import Restaurant from "@/models/Restaurant";
 import { getUser } from "@/lib/api/hooks/getUser";
 import { JsonResponse } from "@/lib/api/responseHandler";
@@ -37,6 +39,10 @@ export const GET = async (req, { params }) => {
             return JsonResponse.error("Restaurant not found or unauthorized", 404);
         }
 
+        const summary = url.searchParams.get("summary") === "true";
+        const startDate = url.searchParams.get("startDate");
+        const endDate = url.searchParams.get("endDate");
+
         const query = { restaurant: id };
         if (status) {
             if (status.includes(",")) {
@@ -46,6 +52,25 @@ export const GET = async (req, { params }) => {
             }
         }
         if (orderType) query.orderType = orderType;
+        if (startDate || endDate) {
+            query.createdAt = {};
+            if (startDate) query.createdAt.$gte = new Date(startDate);
+            if (endDate) query.createdAt.$lte = new Date(endDate);
+        }
+
+        if (summary) {
+            const counts = await Order.aggregate([
+                { $match: { restaurant: mongoose.Types.ObjectId.createFromHexString(id), status: { $in: ["PENDING_PAYMENT", "PLACED", "ACCEPTED", "PREPARING", "READY_FOR_PICKUP", "OUT_FOR_DELIVERY", "PICKED_UP"] } } },
+                { $group: { _id: "$status", count: { $sum: 1 } } }
+            ]);
+            
+            const summaryData = counts.reduce((acc, curr) => {
+                acc[curr._id] = curr.count;
+                return acc;
+            }, {});
+
+            return JsonResponse.success(summaryData, "Order summary fetched successfully", 200);
+        }
 
         if (search) {
             const matchingCustomers = await User.find({
@@ -64,7 +89,7 @@ export const GET = async (req, { params }) => {
 
         const skip = (page - 1) * limit;
 
-        const cacheKey = `restaurant:${id}:orders:page:${page}:limit:${limit}:status:${status || "all"}:type:${orderType || "all"}:search:${search || "none"}`;
+        const cacheKey = `restaurant:${id}:orders:page:${page}:limit:${limit}:status:${status || "all"}:type:${orderType || "all"}:search:${search || "none"}:start:${startDate || "all"}:end:${endDate || "all"}`;
         const cachedOrders = await getCache(cacheKey);
 
         if (cachedOrders) {
@@ -76,8 +101,9 @@ export const GET = async (req, { params }) => {
         }
 
         const orders = await Order.find(query)
+            .populate("items.menuItem", "name description image base_price isVeg cuisineType")
             .populate("table", "tableNumber label zone")
-            .populate("customer", "name phone email")
+            .populate("customer", "name phone email profileImageUrl")
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
@@ -93,6 +119,7 @@ export const GET = async (req, { params }) => {
             200
         );
     } catch (err) {
+        console.error("API GET ORDERS ERROR:", err);
         return JsonResponse.error(err?.message || "Internal Server Error!", 500);
     }
 };

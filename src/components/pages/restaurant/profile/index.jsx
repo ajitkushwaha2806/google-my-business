@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Loader from "@/components/global/loader";
 import { useQuery } from "@tanstack/react-query";
 import { renderTabContent, TABS } from "./helpers";
@@ -11,11 +11,29 @@ const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("general");
   const { restaurantId } = useRestaurant()
 
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const { data, isLoading } = useQuery({
     queryKey: ["restaurant-details", restaurantId],
     queryFn: () => RestaurantService.getRestaurantById(restaurantId),
     enabled: !!restaurantId,
   });
+
+  if (!isMounted) {
+    return (
+      <div className="flex-1 w-full max-w-[1400px] mx-auto bg-gray-50/50 dark:bg-zinc-950 min-h-screen">
+        <div className="p-3 md:p-4 space-y-8">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-border/40 shadow-sm overflow-hidden min-h-[400px] flex items-center justify-center">
+            <Loader />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 w-full max-w-[1400px] mx-auto bg-gray-50/50 dark:bg-zinc-950 min-h-screen">

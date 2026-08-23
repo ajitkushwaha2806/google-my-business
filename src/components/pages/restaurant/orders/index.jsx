@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { startOfDay, endOfDay } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import OrderPageHeader from "./fragments/header";
 import OrderTable from "./fragments/order-table";
@@ -15,6 +16,10 @@ const OrdersManagement = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [appliedSearch, setAppliedSearch] = useState("");
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [dateRange, setDateRange] = useState({
+        from: startOfDay(new Date()),
+        to: endOfDay(new Date())
+    });
     const limit = 10;
 
     const handleSearch = (overrideQuery) => {
@@ -23,7 +28,7 @@ const OrdersManagement = () => {
     };
 
     const { data, isLoading, refetch } = useQuery({
-        queryKey: ["orders", restaurantId, filter, page, appliedSearch],
+        queryKey: ["orders", restaurantId, filter, page, appliedSearch, dateRange],
         queryFn: async () => {
             if (!restaurantId) return { orders: [], total: 0 };
             const params = { page, limit };
@@ -33,6 +38,12 @@ const OrdersManagement = () => {
             }
             if (appliedSearch) {
                 params.search = appliedSearch;
+            }
+            if (dateRange?.from) {
+                params.startDate = dateRange.from.toISOString();
+            }
+            if (dateRange?.to) {
+                params.endDate = dateRange.to.toISOString();
             }
 
             return OrderService.getAll(restaurantId, params);
@@ -56,6 +67,11 @@ const OrdersManagement = () => {
                     searchQuery={searchQuery}
                     setSearchQuery={setSearchQuery}
                     onSearch={handleSearch}
+                    dateRange={dateRange}
+                    setDateRange={(range) => {
+                        setDateRange(range);
+                        setPage(1);
+                    }}
                 />
                 
                 <OrderTable

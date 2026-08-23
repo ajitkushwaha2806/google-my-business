@@ -106,11 +106,10 @@ const OrderSchema = new Schema({
   toObject: { virtuals: true }
 });
 
-OrderSchema.pre('save', function(next) {
+OrderSchema.pre('save', function() {
   if (this.isModified('subtotal') || this.isModified('tax') || this.isModified('discount')) {
     this.totalAmount = this.subtotal + this.tax - this.discount;
   }
-  next();
 });
 
 export const OrderStatus = ORDER_STATUS;

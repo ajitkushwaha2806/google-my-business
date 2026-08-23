@@ -23,6 +23,13 @@ const staffSchema = new Schema(
       select: false,
     },
     
+    clerkUserId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true,
+    },
+    
     image: {
       type: Types.ObjectId,
       ref: "ImageAsset",
