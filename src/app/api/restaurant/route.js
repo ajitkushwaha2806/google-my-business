@@ -67,7 +67,7 @@ export const POST = async (req) => {
 
         const newStaff = new Staff({
             email: user.email,
-            name: user.name,
+            name: user.name || user.email?.split('@')[0] || "Restaurant Owner",
             role: ownerRole._id,
             restaurant: newRestaurant._id,
             status: "ACTIVE",
