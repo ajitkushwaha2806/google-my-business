@@ -1,10 +1,13 @@
+import crypto from "crypto";
 import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
+import Table from "@/models/Table";
+import { User } from "@/models/User";
 import Restaurant from "@/models/Restaurant";
 import { getUser } from "@/lib/api/hooks/getUser";
 import { JsonResponse } from "@/lib/api/responseHandler";
 import { validateRequiredFields } from "@/lib/api/helpers/validator";
-import crypto from "crypto";
+import { getCache, setCache } from "@/services/backend/redis/cache.service";
 
 const ORDER_POST_REQUIRED_FIELDS = ["orderType", "items", "subtotal", "totalAmount"];
 
@@ -18,6 +21,7 @@ export const GET = async (req, { params }) => {
         const url = new URL(req.url);
         const status = url.searchParams.get("status");
         const orderType = url.searchParams.get("orderType");
+        const search = url.searchParams.get("search");
         const page = parseInt(url.searchParams.get("page") || "1");
         const limit = parseInt(url.searchParams.get("limit") || "50");
 
@@ -34,10 +38,42 @@ export const GET = async (req, { params }) => {
         }
 
         const query = { restaurant: id };
-        if (status) query.status = status;
+        if (status) {
+            if (status.includes(",")) {
+                query.status = { $in: status.split(",") };
+            } else {
+                query.status = status;
+            }
+        }
         if (orderType) query.orderType = orderType;
 
+        if (search) {
+            const matchingCustomers = await User.find({
+                $or: [
+                    { name: { $regex: search, $options: "i" } },
+                    { phone: { $regex: search, $options: "i" } }
+                ]
+            }).select('_id');
+            const customerIds = matchingCustomers.map(c => c._id);
+
+            query.$or = [
+                { orderNumber: { $regex: search, $options: "i" } },
+                { customer: { $in: customerIds } }
+            ];
+        }
+
         const skip = (page - 1) * limit;
+
+        const cacheKey = `restaurant:${id}:orders:page:${page}:limit:${limit}:status:${status || "all"}:type:${orderType || "all"}:search:${search || "none"}`;
+        const cachedOrders = await getCache(cacheKey);
+
+        if (cachedOrders) {
+            return JsonResponse.success(
+                cachedOrders,
+                "Orders fetched successfully (cached)",
+                200
+            );
+        }
 
         const orders = await Order.find(query)
             .populate("table", "tableNumber label zone")
@@ -47,9 +83,12 @@ export const GET = async (req, { params }) => {
             .limit(limit);
 
         const totalOrders = await Order.countDocuments(query);
+        const result = { orders, total: totalOrders, page, limit };
+
+        await setCache(cacheKey, result, 60 * 5);
 
         return JsonResponse.success(
-            { orders, total: totalOrders, page, limit },
+            result,
             "Orders fetched successfully",
             200
         );
