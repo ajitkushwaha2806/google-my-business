@@ -6,7 +6,7 @@ import { TABLE_STATUS_FILTERS } from "../helpers/constants";
 const TablePageHeader = ({ onAddTable, filter, setFilter }) => {
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
                         Table Management
@@ -17,7 +17,7 @@ const TablePageHeader = ({ onAddTable, filter, setFilter }) => {
                 </div>
                 <Button
                     onClick={onAddTable}
-                    className="bg-orange-600 hover:bg-orange-700 text-white h-10 px-4 gap-2 shadow-sm font-medium"
+                    className="bg-orange-600 hover:bg-orange-700 text-white h-10 px-4 gap-2 shadow-sm font-medium w-full md:w-auto"
                 >
                     <Plus size={16} />
                     Add Table
