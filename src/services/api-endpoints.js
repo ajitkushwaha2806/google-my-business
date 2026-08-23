@@ -43,5 +43,19 @@ export const API_ENDPOINTS = {
     },
     ROLE: {
         GET_ALL: (resId) => `/api/restaurant/${resId}/role`,
-    }
+    },
+    TABLE: {
+        CREATE: (resId) => `/api/restaurant/${resId}/tables`,
+        GET_ALL: (resId) => `/api/restaurant/${resId}/tables`,
+        GET_ONE: (resId, tableId) => `/api/restaurant/${resId}/tables/${tableId}`,
+        UPDATE: (resId, tableId) => `/api/restaurant/${resId}/tables/${tableId}`,
+        DELETE: (resId, tableId) => `/api/restaurant/${resId}/tables/${tableId}`,
+    },
+    ORDER: {
+        CREATE: (resId) => `/api/restaurant/${resId}/orders`,
+        GET_ALL: (resId) => `/api/restaurant/${resId}/orders`,
+        GET_ONE: (resId, orderId) => `/api/restaurant/${resId}/orders/${orderId}`,
+        UPDATE: (resId, orderId) => `/api/restaurant/${resId}/orders/${orderId}`,
+        DELETE: (resId, orderId) => `/api/restaurant/${resId}/orders/${orderId}`,
+    },
 }

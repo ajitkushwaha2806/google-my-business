@@ -8,6 +8,7 @@ export const getRolesCacheKey = () => `restaurant:roles:all`;
 export const getStaffCacheKey = (restaurantId) => `restaurant:staff:${restaurantId}`;
 export const getUsersCacheKey = (restaurantId) => `restaurant:users:${restaurantId}`;
 export const getAddonGroupsCacheKey = (restaurantId) => `restaurant:addon-groups:${restaurantId}`;
+export const getTablesCacheKey = (restaurantId) => `restaurant:tables:${restaurantId}`;
 
 export const invalidateRestaurantCache = async (userId, restaurantId) => {
     if (userId) await deleteCache(getRestaurantCacheKey(userId));
@@ -36,4 +37,8 @@ export const invalidateUserCache = async (restaurantId) => {
 
 export const invalidateAddonGroupCache = async (restaurantId) => {
     if (restaurantId) await deleteCache(getAddonGroupsCacheKey(restaurantId));
+};
+
+export const invalidateTableCache = async (restaurantId) => {
+    if (restaurantId) await deleteCache(getTablesCacheKey(restaurantId));
 };

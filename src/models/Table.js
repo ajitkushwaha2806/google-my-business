@@ -1,5 +1,5 @@
-import mongoose, { Schema, Types } from "mongoose";
 import crypto from "crypto";
+import mongoose, { Schema, Types } from "mongoose";
 
 const TableSchema = new Schema(
   {
@@ -9,6 +9,13 @@ const TableSchema = new Schema(
       required: [true, "Restaurant is required"],
       index: true,
       immutable: true,
+    },
+    zone: {
+      type: String,
+      trim: true,
+      maxlength: [50, "Zone name cannot exceed 50 characters"],
+      default: "General",
+      index: true,
     },
     tableNumber: {
       type: Number,
@@ -63,13 +70,10 @@ const TableSchema = new Schema(
 );
 
 TableSchema.index(
-  {
-    restaurant: 1,
-    tableNumber: 1,
-  },
-  {
-    unique: true,
-  },
+  { restaurant: 1, zone: 1, tableNumber: 1 },
+  { unique: true },
 );
 
-export default mongoose.model("Table", TableSchema);
+export default mongoose.models.Table || mongoose.model("Table", TableSchema);
+
+
