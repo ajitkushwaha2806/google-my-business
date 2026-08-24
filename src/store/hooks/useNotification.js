@@ -13,13 +13,13 @@ export default function useNotification() {
         (
             type,
             message,
-            options
+            options = {}
         ) => {
             dispatch(
                 showNotification({
                     type,
                     message,
-                    duration: options?.duration,
+                    duration: options?.duration || 3000,
                 })
             );
         },

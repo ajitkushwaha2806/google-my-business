@@ -5,7 +5,6 @@ const staffSchema = new Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
       trim: true,
       index: true,
@@ -70,5 +69,7 @@ const staffSchema = new Schema(
     timestamps: true,
   }
 );
+
+staffSchema.index({ email: 1, restaurant: 1 }, { unique: true });
 
 export const Staff = models.Staff || model("Staff", staffSchema);

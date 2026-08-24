@@ -3,7 +3,7 @@ import ImageAsset from "@/models/Image";
 import Restaurant from "@/models/Restaurant";
 import { JsonResponse } from "@/lib/api/responseHandler";
 import { getRestaurant } from "@/lib/api/hooks/getRestaurant";
-import { getCache, setCache } from "@/services/backend/redis/cache.service";
+import { getCache, setCache, deleteCache } from "@/services/backend/redis/cache.service";
 import { getRestaurantDetailsCacheKey, invalidateRestaurantCache } from "@/lib/api/helpers/cacheKeys";
 
 const ALLOWED_UPDATE_FIELDS = [
@@ -50,6 +50,9 @@ export const PUT = async (req, { params }) => {
         }
 
         await invalidateRestaurantCache(user.id, id);
+        if (updatedRestaurant.slug) {
+            await deleteCache(`restaurant:slug:${updatedRestaurant.slug}`);
+        }
 
         return JsonResponse.success(
             { restaurant: updatedRestaurant }, 

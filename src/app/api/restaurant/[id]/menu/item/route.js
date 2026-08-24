@@ -88,6 +88,10 @@ export const POST = async (req, { params }) => {
         }
 
         const data = await req.json();
+
+        if (data.image === "") {
+            data.image = null;
+        }
         const { isValid, message } = validateRequiredFields(data, MENU_ITEM_POST_REQUIRED_FIELDS);
         
         if (!isValid) {
@@ -166,6 +170,10 @@ export const PUT = async (req, { params }) => {
         }
 
         const data = await req.json();
+
+        if (data.image === "") {
+            data.image = null;
+        }
 
         if (data.category && data.category !== undefined) {
             const category = await Category.findOne({ _id: data.category, restaurant: id });

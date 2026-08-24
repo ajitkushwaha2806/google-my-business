@@ -15,4 +15,5 @@ export const ALLOWED_FOLDERS = [
   "menu/items",
   "staff-profiles",
   "user-profiles",
+  "website/banners",
 ];

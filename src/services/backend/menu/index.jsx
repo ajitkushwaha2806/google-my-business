@@ -14,7 +14,7 @@ export const MenuService = {
         if (!category.image) {
           const itemWithImage = await MenuItem.findOne({
             category: category._id,
-            image: { $ne: null, $ne: "" },
+            image: { $ne: null },
           }).populate("image").lean();
 
           if (itemWithImage) {
