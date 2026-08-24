@@ -23,7 +23,7 @@ const StaffManagement = () => {
     return (
         <div className="flex flex-col h-[calc(100vh-60px)] w-full bg-[#f8fafc] dark:bg-zinc-950 overflow-y-auto">
             <div className="mx-auto w-full p-2 md:p-4 space-y-6">
-                <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-md shadow-sm overflow-hidden">
+                <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 overflow-hidden">
                     <CustomTabs
                         tabs={TABS}
                         activeTab={activeTab}

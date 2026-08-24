@@ -22,23 +22,23 @@ export const TabContent = ({ activeTab, handleAddStaff, handleEditStaff }) => {
             case "manage_users":
                 return (
                     <div className="flex flex-col gap-6">
-                        <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
-                            <div>
+                        <div className="flex flex-col md:flex-row justify-between md:items-end gap-4 pb-4 border-b border-gray-100 dark:border-zinc-800 md:border-none md:pb-0">
+                            <div className="hidden md:block">
                                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Staff Management</h2>
-                                <p className="text-sm text-gray-500 mt-1">Track user staff&apos;s activity , permissions and roles.</p>
+                                <p className="text-sm text-gray-500 mt-1">Track user staff&apos;s activity, permissions and roles.</p>
                             </div>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 w-full md:w-auto">
                                 <button
                                     onClick={handleAddStaff}
-                                    className="flex items-center gap-1.5 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md font-medium shadow-sm transition-all active:scale-95 text-sm"
+                                    className="flex items-center justify-center gap-1.5 bg-green-500 hover:bg-green-600 text-white px-4 py-2.5 md:py-2 rounded-md font-semibold shadow-sm transition-all active:scale-95 text-sm w-full md:w-auto"
                                 >
-                                    <Plus size={16} strokeWidth={2.5} />
+                                    <Plus size={18} strokeWidth={2.5} className="md:w-4 md:h-4" />
                                     Add Staff
                                 </button>
                             </div>
                         </div>
                     
-                        <div className="border border-gray-200 dark:border-zinc-800 rounded-md overflow-hidden bg-white">
+                        <div className="md:border border-gray-200 dark:border-zinc-800 rounded-md overflow-hidden bg-transparent md:bg-white md:dark:bg-zinc-900 -mt-2 md:mt-0">
                             <StaffTable
                                 staffList={staffList} 
                                 isLoading={isLoading} 

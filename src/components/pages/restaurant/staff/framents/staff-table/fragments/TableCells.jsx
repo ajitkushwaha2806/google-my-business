@@ -5,7 +5,7 @@ import { Edit2, Phone, Trash2, ShieldCheck } from "lucide-react";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 export const StaffProfileCell = ({ staff }) => (
-    <div className="flex items-center gap-3.5">
+    <div className="flex items-center gap-3.5 min-w-0 w-full">
         <div className="w-11 h-11 rounded-md overflow-hidden shrink-0 border border-gray-100 dark:border-zinc-800 shadow-sm">
             <img 
                 src={getImageUrl(staff.image, true, "thumbnail") || `https://api.dicebear.com/7.x/notionists/svg?seed=${staff.name}&backgroundColor=f1f5f9`} 
@@ -13,8 +13,8 @@ export const StaffProfileCell = ({ staff }) => (
                 className="w-full h-full object-cover"
             />
         </div>
-        <div className="flex flex-col min-w-0 gap-0.5">
-            <span className="font-bold text-gray-900 dark:text-gray-100 text-[15px]">{staff.name}</span>
+        <div className="flex flex-col min-w-0 gap-0.5 flex-1">
+            <span className="font-bold text-gray-900 dark:text-gray-100 text-[15px] truncate">{staff.name}</span>
             <div className="flex items-center gap-1">
                 <span className="text-[13px] font-medium text-blue-600 dark:text-blue-400 truncate">{staff.email}</span>
                 {staff.phone && <Phone size={12} className="text-green-500 ml-1" />}

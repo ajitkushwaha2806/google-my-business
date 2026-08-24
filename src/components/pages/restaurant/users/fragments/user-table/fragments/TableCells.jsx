@@ -3,7 +3,7 @@ import { getImageUrl } from "@/lib/utils";
 import { Edit2, Phone, Trash2 } from "lucide-react";
 
 export const UserProfileCell = ({ user }) => (
-    <div className="flex items-center gap-3.5">
+    <div className="flex items-center gap-3.5 min-w-0 w-full">
         <div className="w-11 h-11 rounded-md overflow-hidden shrink-0 border border-gray-100 dark:border-zinc-800 shadow-sm">
             <img 
                 src={getImageUrl(user.image, true, "thumbnail") || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.phone}&backgroundColor=f1f5f9`} 
@@ -11,8 +11,8 @@ export const UserProfileCell = ({ user }) => (
                 className="w-full h-full object-cover"
             />
         </div>
-        <div className="flex flex-col min-w-0 gap-0.5">
-            <span className="font-bold text-gray-900 dark:text-gray-100 text-[15px]">{user.name}</span>
+        <div className="flex flex-col min-w-0 gap-0.5 flex-1">
+            <span className="font-bold text-gray-900 dark:text-gray-100 text-[15px] truncate">{user.name}</span>
             <div className="flex items-center gap-1">
                 <Phone size={12} className="text-gray-400" />
                 <span className="text-[13px] font-medium text-gray-600 dark:text-gray-400 truncate">{user.phone}</span>

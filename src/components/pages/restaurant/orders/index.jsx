@@ -56,7 +56,7 @@ const OrdersManagement = () => {
     };
 
     return (
-        <div className="flex flex-col bg-white m-4 rounded-md dark:bg-zinc-950 overflow-y-auto">
+        <div className="flex flex-col bg-white m-4 dark:bg-zinc-950 overflow-y-auto">
             <div className="mx-auto w-full p-4 md:p-6 space-y-6">
                 <OrderPageHeader
                     filter={filter}
