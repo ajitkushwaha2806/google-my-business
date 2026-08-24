@@ -90,7 +90,16 @@ export class MenuSearchService {
                                 as: "subCategory"
                             }
                         },
-                        { $unwind: { path: "$subCategory", preserveNullAndEmptyArrays: true } }
+                        { $unwind: { path: "$subCategory", preserveNullAndEmptyArrays: true } },
+                        {
+                            $lookup: {
+                                from: "imageassets",
+                                localField: "image",
+                                foreignField: "_id",
+                                as: "image"
+                            }
+                        },
+                        { $unwind: { path: "$image", preserveNullAndEmptyArrays: true } }
                     ],
                     meta: [
                         {

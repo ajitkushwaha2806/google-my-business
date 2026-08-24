@@ -3,7 +3,7 @@ import axios from "axios";
 export const FoodsnapService = {
   searchImages: async ({ query, page = 1, limit = 20 }) => {
     try {
-      const response = await axios.get("/api/image-search", {
+      const response = await axios.get("/api/images/search", {
         params: {
           q: query,
           page,
@@ -19,7 +19,7 @@ export const FoodsnapService = {
   
   downloadImageAsFile: async (imageUrl, filename) => {
     try {
-      const response = await axios.get("/api/image-proxy", {
+      const response = await axios.get("/api/images/proxy", {
         params: { url: imageUrl },
         responseType: "blob",
       });

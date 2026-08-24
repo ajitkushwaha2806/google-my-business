@@ -1,3 +1,4 @@
+import "@/models/Image";
 import dbConnect from "@/lib/db";
 import Restaurant from "@/models/Restaurant";
 import { JsonResponse } from "@/lib/api/responseHandler";
@@ -14,8 +15,8 @@ export const GET = async (req, { params }) => {
         }
 
         await dbConnect();
-
         const restaurant = await Restaurant.findOne({ slug })
+            .populate("logo")
             .select("name slug domain phone email logo address status openingHours")
             .lean();
         if (!restaurant) {

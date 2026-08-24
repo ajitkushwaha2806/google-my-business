@@ -96,7 +96,7 @@ export class AuthService {
             throw new Error("Invalid token");
         }
 
-        const user = await User.findOne({ _id: decoded.userId, restaurant: restaurant._id });
+        const user = await User.findOne({ _id: decoded.userId, restaurant: restaurant._id }).populate("image");
         if (!user) {
             throw new Error("User not found");
         }
@@ -135,7 +135,7 @@ export class AuthService {
             throw new Error("Invalid token");
         }
 
-        const user = await User.findOne({ _id: decoded.userId, restaurant: restaurant._id });
+        const user = await User.findOne({ _id: decoded.userId, restaurant: restaurant._id }).populate("image");
         if (!user) {
             throw new Error("User not found");
         }
