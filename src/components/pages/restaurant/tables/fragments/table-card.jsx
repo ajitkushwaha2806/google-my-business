@@ -1,9 +1,21 @@
 "use client";
-import { QrCode, Pencil, Trash2, Users, MapPin, Hash, Download } from "lucide-react";
+import { useState } from "react";
 import { StatusBadge } from "./table-row";
+import { buildQRUrl } from "../helpers/constants";
+import { Pencil, Trash2, Users, MapPin, Download, Link, Copy, Check } from "lucide-react";
 
-export const TableCard = ({ table, index, onEditTable, onDownloadQR, onDeleteTable }) => (
-    <div className="bg-white dark:bg-zinc-950/50 border border-gray-100 dark:border-zinc-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow">
+export const TableCard = ({ table, index, onEditTable, onDownloadQR, onDeleteTable }) => {
+    const [copied, setCopied] = useState(false);
+    const qrUrl = buildQRUrl(table.qrToken);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(qrUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+        <div className="bg-white dark:bg-zinc-950/50 border border-gray-100 dark:border-zinc-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow">
         
         <div className="flex items-center justify-between border-b border-gray-50 dark:border-zinc-900 pb-3">
             <div className="flex items-center gap-3">
@@ -52,10 +64,17 @@ export const TableCard = ({ table, index, onEditTable, onDownloadQR, onDeleteTab
         </div>
 
         <div className="flex items-center gap-2 bg-gray-50 dark:bg-zinc-900/50 rounded-lg px-3 py-2">
-            <Hash size={14} className="text-gray-400 dark:text-zinc-500 shrink-0" />
-            <span className="text-xs font-mono text-gray-500 dark:text-gray-400 truncate">
-                Token: {table.qrToken?.slice(0, 15)}…
+            <Link size={14} className="text-gray-400 dark:text-zinc-500 shrink-0" />
+            <span className="text-xs font-mono text-gray-500 dark:text-gray-400 truncate flex-1">
+                {qrUrl}
             </span>
+            <button 
+                onClick={handleCopy}
+                className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
+                title="Copy URL"
+            >
+                {copied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+            </button>
         </div>
 
         <div className="flex items-center gap-2 pt-1 mt-1 border-t border-gray-50 dark:border-zinc-900">
@@ -80,5 +99,6 @@ export const TableCard = ({ table, index, onEditTable, onDownloadQR, onDeleteTab
             </button>
         </div>
 
-    </div>
-);
+      </div>
+    );
+};

@@ -41,11 +41,8 @@ const COLUMNS = [
 const TableGrid = ({ filter, onEditTable, onDownloadQR }) => {
     const { restaurantId } = useRestaurant();
     const { tables, isLoading, deleteTable, isDeleting } = useTable(restaurantId);
-    
     const [tableToDelete, setTableToDelete] = useState(null);
-
     const filtered = filter === "all" ? tables : tables.filter((t) => t.status === filter);
-
     const handleDeleteClick = (tableId) => {
         setTableToDelete(tableId);
     };
@@ -116,11 +113,16 @@ const TableGrid = ({ filter, onEditTable, onDownloadQR }) => {
 
             <div className="flex flex-col gap-4 md:hidden">
                 {!filtered.length ? (
-                    <div className="flex flex-col items-center justify-center py-10 text-center">
-                        <div className="w-12 h-12 rounded-2xl bg-orange-50 dark:bg-orange-950 flex items-center justify-center mb-3 border border-orange-100 dark:border-orange-900">
-                            <TableProperties size={20} className="text-orange-500" />
+                    <div className="flex flex-col items-center justify-center py-24 px-6 text-center bg-gray-50/50 dark:bg-zinc-900/30 rounded-2xl border-2 border-dashed border-gray-200 dark:border-zinc-800/80 mt-2 mb-4">
+                        <div className="w-16 h-16 rounded-3xl bg-orange-50 dark:bg-orange-950/50 flex items-center justify-center mb-4 border border-orange-100 dark:border-orange-900/50 shadow-sm">
+                            <TableProperties size={28} className="text-orange-500" strokeWidth={1.5} />
                         </div>
-                        <p className="text-gray-700 dark:text-gray-300 font-semibold text-sm">No tables found</p>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1.5">No tables found</h3>
+                        <p className="text-gray-500 dark:text-gray-400 text-sm max-w-[220px] leading-relaxed">
+                            {filter === "all"
+                                ? "Add your first table to start managing your seating."
+                                : `No tables currently marked as "${filter}".`}
+                        </p>
                     </div>
                 ) : (
                     filtered.map((table, i) => (

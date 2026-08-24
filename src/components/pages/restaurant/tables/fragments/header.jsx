@@ -6,20 +6,12 @@ import { TABLE_STATUS_FILTERS } from "../helpers/constants";
 const TablePageHeader = ({ onAddTable, filter, setFilter }) => {
     return (
         <div className="space-y-4">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-                        Table Management
-                    </h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                        Create tables, generate QR codes and manage dine-in seating
-                    </p>
-                </div>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
                 <Button
                     onClick={onAddTable}
-                    className="bg-orange-600 hover:bg-orange-700 text-white h-10 px-4 gap-2 shadow-sm font-medium w-full md:w-auto"
+                    className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white h-12 md:h-11 px-6 gap-2.5 shadow-md hover:shadow-lg font-bold text-[15px] rounded-xl w-full md:w-auto transition-all active:scale-[0.98]"
                 >
-                    <Plus size={16} />
+                    <Plus size={18} strokeWidth={3} />
                     Add Table
                 </Button>
             </div>

@@ -1,6 +1,7 @@
 "use client";
-import { TABLE_STATUS_CONFIG } from "../helpers/constants";
-import { Pencil, Trash2, Users, Hash, MapPin, Download } from "lucide-react";
+import { useState } from "react";
+import { TABLE_STATUS_CONFIG, buildQRUrl } from "../helpers/constants";
+import { Pencil, Trash2, Users, MapPin, Download, Link, Copy, Check } from "lucide-react";
 
 export const StatusBadge = ({ status }) => {
     const cfg = TABLE_STATUS_CONFIG[status] || TABLE_STATUS_CONFIG.unavailable;
@@ -12,7 +13,17 @@ export const StatusBadge = ({ status }) => {
     );
 };
 
-export const TableRow = ({ table, index, onEditTable, onDownloadQR, onDeleteTable }) => (
+export const TableRow = ({ table, index, onEditTable, onDownloadQR, onDeleteTable }) => {
+    const [copied, setCopied] = useState(false);
+    const qrUrl = buildQRUrl(table.qrToken);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(qrUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
     <tr className="group border-b border-gray-100 dark:border-zinc-800 hover:bg-orange-50/40 dark:hover:bg-zinc-800/60 transition-colors duration-100">
         <td className="px-4 py-3.5 text-xs text-gray-400 dark:text-zinc-500 font-mono w-10">
             {String(index + 1).padStart(2, "0")}
@@ -58,10 +69,17 @@ export const TableRow = ({ table, index, onEditTable, onDownloadQR, onDeleteTabl
             </span>
         </td>
 
-        <td className="px-4 py-3.5">
-            <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-zinc-500 font-mono">
-                <Hash size={11} />
-                <span>{table.qrToken?.slice(0, 10)}…</span>
+        <td className="px-4 py-3.5 max-w-[150px] lg:max-w-[200px]">
+            <div className="flex items-center gap-1.5">
+                <Link size={12} className="text-gray-400 dark:text-zinc-500 shrink-0" />
+                <span className="text-xs text-gray-500 dark:text-zinc-400 font-mono truncate">{qrUrl}</span>
+                <button 
+                    onClick={handleCopy}
+                    className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors shrink-0"
+                    title="Copy URL"
+                >
+                    {copied ? <Check size={13} className="text-emerald-500" /> : <Copy size={13} />}
+                </button>
             </div>
         </td>
 
@@ -92,4 +110,5 @@ export const TableRow = ({ table, index, onEditTable, onDownloadQR, onDeleteTabl
             </div>
         </td>
     </tr>
-);
+    );
+};
