@@ -81,8 +81,8 @@ export function DatePickerWithRange({ className, date, setDate }) {
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 flex flex-col md:flex-row shadow-xl border border-gray-100 dark:border-zinc-800 rounded-xl overflow-hidden" align="end">
-          <div className="w-full md:w-40 border-r border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/50 flex flex-col p-2 gap-1 overflow-y-auto max-h-[300px] md:max-h-none">
+        <PopoverContent className="w-auto max-w-[100vw] p-0 flex flex-row shadow-xl border border-gray-100 dark:border-zinc-800 rounded-xl overflow-hidden" align="end" sideOffset={4}>
+          <div className="w-28 sm:w-36 border-r border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/50 flex flex-col p-1.5 sm:p-2 gap-1 overflow-y-auto no-scrollbar shrink-0 max-h-[360px]">
             {PRESETS.map((preset) => {
               const presetRange = preset.getRange();
               const active = isPresetActive(presetRange);
@@ -91,7 +91,7 @@ export function DatePickerWithRange({ className, date, setDate }) {
                   key={preset.label}
                   onClick={() => setTempDate(presetRange)}
                   className={cn(
-                    "text-left px-3 py-2 rounded-md text-sm transition-colors font-medium",
+                    "text-left px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm transition-colors font-medium truncate",
                     active 
                       ? "bg-primary/10 text-primary dark:bg-primary/20" 
                       : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800"
@@ -103,20 +103,20 @@ export function DatePickerWithRange({ className, date, setDate }) {
             })}
           </div>
 
-          <div className="flex flex-col bg-white dark:bg-zinc-950">
-            <div className="p-3">
+          <div className="flex flex-col bg-white dark:bg-zinc-950 max-w-full overflow-hidden">
+            <div className="p-1.5 sm:p-3 overflow-x-auto no-scrollbar flex justify-center">
               <Calendar
                 initialFocus
                 mode="range"
                 defaultMonth={tempDate?.from}
                 selected={tempDate}
                 onSelect={setTempDate}
-                numberOfMonths={2}
+                numberOfMonths={1}
                 className="select-none"
               />
             </div>
           
-            <div className="flex items-center justify-end gap-2 p-3 border-t border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/50">
+            <div className="flex items-center justify-end gap-2 p-2 sm:p-3 border-t border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/50 shrink-0">
               <Button variant="outline" size="sm" onClick={handleCancel} className="px-4 text-xs font-semibold h-8 rounded-md">
                 Cancel
               </Button>

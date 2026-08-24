@@ -1,12 +1,12 @@
 import { format } from "date-fns";
 import Loader from "@/components/global/loader";
-import { Receipt, MapPin, Hash, Eye, Inbox } from "lucide-react";
 import { ORDER_STATUS_CONFIG, PAYMENT_STATUS_CONFIG } from "../helpers/constants";
+import { Receipt, MapPin, Hash, Eye, Inbox, ChevronLeft, ChevronRight } from "lucide-react";
 
 export const StatusBadge = ({ status }) => {
     const cfg = ORDER_STATUS_CONFIG[status] || { label: status, badge: "bg-gray-100 text-gray-500", dot: "bg-gray-400" };
     return (
-        <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full border ${cfg.badge}`}>
+        <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-md border ${cfg.badge}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
             {cfg.label}
         </span>
@@ -16,9 +16,65 @@ export const StatusBadge = ({ status }) => {
 export const PaymentBadge = ({ status }) => {
     const cfg = PAYMENT_STATUS_CONFIG[status] || PAYMENT_STATUS_CONFIG.pending;
     return (
-        <span className={`inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded uppercase ${cfg.badge}`}>
+        <span className={`inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded-md uppercase ${cfg.badge}`}>
             {cfg.label}
         </span>
+    );
+};
+
+const OrderCard = ({ order, onViewOrder }) => {
+    return (
+        <div className="p-3 flex flex-col gap-4 bg-white dark:bg-zinc-900/50 border border-gray-100 dark:border-zinc-800/80 rounded-2xl hover:border-orange-200 dark:hover:border-orange-900/50 hover:shadow-sm transition-all">
+            <div className="flex justify-between items-start gap-4">
+                <div className="flex items-start gap-3.5 min-w-0">
+                    <div className="w-11 h-11 rounded-xl bg-orange-50 dark:bg-orange-950/50 flex items-center justify-center shrink-0 border border-orange-100 dark:border-orange-900/50 mt-0.5">
+                        <Receipt size={18} className="text-orange-600 dark:text-orange-500" strokeWidth={2.5} />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                        <div className="flex items-center gap-1.5 font-bold text-gray-900 dark:text-gray-100 text-[15px] truncate">
+                            <Hash size={13} className="text-gray-400 shrink-0" />
+                            <span className="truncate whitespace-nowrap">{order.orderNumber}</span>
+                        </div>
+                        <div className="text-[13px] text-gray-500 dark:text-gray-400 mt-1 capitalize truncate">
+                            {order.items?.length || 0} items • {order.orderType === "dine-in" ? `Table ${order?.table?.tableNumber || "-"}` : order.orderType}
+                        </div>
+                    </div>
+                </div>
+                <div className="text-right shrink-0">
+                    <div className="font-extrabold text-gray-900 dark:text-gray-100 text-base">
+                        ₹{order.totalAmount?.toFixed(2)}
+                    </div>
+                    <div className="text-[11px] text-gray-400 uppercase mt-1 font-semibold tracking-wide">
+                        {order.paymentMethod || "CASH"}
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-3.5 border-t border-gray-100 dark:border-zinc-800/80">
+                <div className="flex items-center gap-2 flex-wrap">
+                    <StatusBadge status={order.status} />
+                    {order.paymentStatus && <PaymentBadge status={order.paymentStatus} />}
+                </div>
+                <div className="text-right flex flex-col items-end shrink-0 pl-2">
+                    <span className="text-[13px] font-semibold text-gray-700 dark:text-gray-300">
+                        {format(new Date(order.createdAt), "MMM dd, yyyy")}
+                    </span>
+                    <span className="text-[11px] text-gray-500 font-medium mt-0.5">
+                        {format(new Date(order.createdAt), "hh:mm a")}
+                    </span>
+                </div>
+            </div>
+
+            <div className="pt-2">
+                <button 
+                    onClick={() => onViewOrder(order)}
+                    className="w-full py-2 bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 text-white rounded-md text-sm font-bold flex items-center justify-center gap-1.5 transition-colors shadow-sm active:scale-[0.98]"
+                >
+                    View Details
+                    <ChevronRight size={16} strokeWidth={2.5} />
+                </button>
+            </div>
+        </div>
     );
 };
 
@@ -47,8 +103,8 @@ const OrderTable = ({ orders, total, page, limit, onPageChange, isLoading, onVie
     };
 
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800/80 shadow-sm overflow-hidden flex flex-col">
-            <div className="overflow-x-auto min-h-[400px]">
+        <div className="bg-transparent md:bg-white md:dark:bg-zinc-900 md:rounded-2xl md:border border-gray-200 dark:border-zinc-800/80 md:shadow-sm flex flex-col">
+            <div className="hidden md:block overflow-x-auto min-h-[400px]">
                 <table className="w-full text-left border-collapse whitespace-nowrap">
                     <thead>
                         <tr className="border-b border-gray-100 dark:border-zinc-800/80 bg-gray-50/50 dark:bg-zinc-900/50">
@@ -175,18 +231,37 @@ const OrderTable = ({ orders, total, page, limit, onPageChange, isLoading, onVie
                 </table>
             </div>
 
+            <div className="flex flex-col md:hidden gap-3 min-h-[400px]">
+                {isLoading ? (
+                    <div className="flex flex-col items-center justify-center p-16">
+                        <Loader />
+                    </div>
+                ) : orders.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center p-16 gap-3 text-gray-400">
+                        <div className="w-12 h-12 rounded-full bg-gray-50 dark:bg-zinc-800/50 flex items-center justify-center">
+                            <Inbox size={24} className="text-gray-300 dark:text-zinc-600" />
+                        </div>
+                        <p className="text-sm font-medium">No orders found.</p>
+                    </div>
+                ) : (
+                    orders.map((order) => (
+                        <OrderCard key={order._id} order={order} onViewOrder={onViewOrder} />
+                    ))
+                )}
+            </div>
+
             {!isLoading && total > 0 && (
-                <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 dark:border-zinc-800/80 bg-gray-50/50 dark:bg-zinc-900/50">
-                    <p className="text-xs text-gray-500">
+                <div className="flex flex-col md:flex-row items-center justify-between px-2 md:px-5 py-4 md:py-3 gap-4 md:border-t border-gray-100 dark:border-zinc-800/80 md:bg-gray-50/50 md:dark:bg-zinc-900/50 mt-2 md:mt-0">
+                    <p className="text-sm md:text-xs text-gray-500 text-center md:text-left">
                         Showing <span className="font-medium text-gray-900 dark:text-gray-100">{(page - 1) * limit + 1}</span> to <span className="font-medium text-gray-900 dark:text-gray-100">{Math.min(page * limit, total)}</span> of <span className="font-medium text-gray-900 dark:text-gray-100">{total}</span> results
                     </p>
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center justify-center gap-1.5 flex-wrap">
                         <button
                             onClick={() => onPageChange(page - 1)}
                             disabled={page === 1}
-                            className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-zinc-700 text-xs font-medium text-gray-600 dark:text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors bg-white dark:bg-zinc-900"
+                            className="p-1.5 md:px-3 md:py-1.5 rounded-lg border border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors bg-white dark:bg-zinc-900 flex items-center justify-center"
                         >
-                            Previous
+                            <ChevronLeft size={18} />
                         </button>
                         
                         {getPageNumbers().map((p) => (
@@ -206,9 +281,9 @@ const OrderTable = ({ orders, total, page, limit, onPageChange, isLoading, onVie
                         <button
                             onClick={() => onPageChange(page + 1)}
                             disabled={page === totalPages}
-                            className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-zinc-700 text-xs font-medium text-gray-600 dark:text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors bg-white dark:bg-zinc-900"
+                            className="p-1.5 md:px-3 md:py-1.5 rounded-lg border border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors bg-white dark:bg-zinc-900 flex items-center justify-center"
                         >
-                            Next
+                            <ChevronRight size={18} />
                         </button>
                     </div>
                 </div>

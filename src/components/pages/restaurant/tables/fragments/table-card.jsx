@@ -15,7 +15,7 @@ export const TableCard = ({ table, index, onEditTable, onDownloadQR, onDeleteTab
     };
 
     return (
-        <div className="bg-white dark:bg-zinc-950/50 border border-gray-100 dark:border-zinc-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-zinc-950/50 border border-gray-100 dark:border-zinc-800/80 rounded-md p-2 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow">
         
         <div className="flex items-center justify-between border-b border-gray-50 dark:border-zinc-900 pb-3">
             <div className="flex items-center gap-3">

@@ -7,15 +7,6 @@ const OrderPageHeader = ({ filter, setFilter, searchQuery, setSearchQuery, onSea
     return (
         <div className="space-y-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-                        Orders
-                    </h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                        Manage dine-in, takeaway, and online orders
-                    </p>
-                </div>
-
                 <div className="relative max-w-sm w-full md:w-72">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Search size={16} className="text-gray-400" />
