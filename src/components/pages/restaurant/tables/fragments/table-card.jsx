@@ -80,7 +80,7 @@ export const TableCard = ({ table, index, onEditTable, onDownloadQR, onDeleteTab
         <div className="flex items-center gap-2 pt-1 mt-1 border-t border-gray-50 dark:border-zinc-900">
             <button
                 onClick={() => onDownloadQR(table)}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-bold bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 shadow-md hover:shadow-lg transition-all active:scale-[0.98]"
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-bold bg-orange-500 text-white hover:from-orange-600 hover:to-orange-700 shadow-md hover:shadow-lg transition-all active:scale-[0.98]"
             >
                 <Download size={16} />
                 Download QR

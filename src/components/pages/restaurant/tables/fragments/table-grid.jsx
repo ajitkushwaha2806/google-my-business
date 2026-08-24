@@ -59,25 +59,6 @@ const TableGrid = ({ filter, onEditTable, onDownloadQR }) => {
 
     return (
         <div className="flex flex-col gap-4 md:gap-0 md:bg-white md:dark:bg-zinc-900 md:rounded-2xl md:border md:border-gray-200 md:dark:border-zinc-800 md:shadow-sm md:overflow-hidden">
-            <div className="flex items-center justify-between px-1 md:px-5 py-3.5 md:border-b md:border-gray-100 md:dark:border-zinc-800 md:bg-gray-50/70 md:dark:bg-zinc-800/50">
-                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    {filtered.length} {filtered.length === 1 ? "Table" : "Tables"}
-                    {filter !== "all" && <span className="ml-1 text-orange-500">· {filter}</span>}
-                </p>
-                <div className="flex items-center gap-4 text-[11px] text-gray-400 dark:text-zinc-500">
-                    {Object.entries(TABLE_STATUS_CONFIG).map(([key, cfg]) => {
-                        const count = tables.filter((t) => t.status === key).length;
-                        if (!count) return null;
-                        return (
-                            <span key={key} className="flex items-center gap-1">
-                                <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
-                                {count} {cfg.label}
-                            </span>
-                        );
-                    })}
-                </div>
-            </div>
-
             <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>

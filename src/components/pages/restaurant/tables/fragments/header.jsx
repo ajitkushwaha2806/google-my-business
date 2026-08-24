@@ -9,7 +9,7 @@ const TablePageHeader = ({ onAddTable, filter, setFilter }) => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
                 <Button
                     onClick={onAddTable}
-                    className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white h-12 md:h-11 px-6 gap-2.5 shadow-md hover:shadow-lg font-bold text-[15px] rounded-xl w-full md:w-auto transition-all active:scale-[0.98]"
+                    className="bg-orange-500 hover:from-orange-600 hover:to-orange-700 text-white h-12 md:h-11 px-6 gap-2.5 shadow-md hover:shadow-lg font-bold text-[15px] rounded-xl w-full md:w-auto transition-all active:scale-[0.98]"
                 >
                     <Plus size={18} strokeWidth={3} />
                     Add Table
