@@ -38,7 +38,7 @@ const COLUMNS = [
     { label: "Actions",  width: "w-36" },
 ];
 
-const TableGrid = ({ filter, onEditTable, onViewQR }) => {
+const TableGrid = ({ filter, onEditTable, onDownloadQR }) => {
     const { restaurantId } = useRestaurant();
     const { tables, isLoading, deleteTable, isDeleting } = useTable(restaurantId);
     
@@ -61,8 +61,8 @@ const TableGrid = ({ filter, onEditTable, onViewQR }) => {
     if (isLoading) return <Loader />;
 
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-zinc-800 bg-gray-50/70 dark:bg-zinc-800/50">
+        <div className="flex flex-col gap-4 md:gap-0 md:bg-white md:dark:bg-zinc-900 md:rounded-2xl md:border md:border-gray-200 md:dark:border-zinc-800 md:shadow-sm md:overflow-hidden">
+            <div className="flex items-center justify-between px-1 md:px-5 py-3.5 md:border-b md:border-gray-100 md:dark:border-zinc-800 md:bg-gray-50/70 md:dark:bg-zinc-800/50">
                 <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                     {filtered.length} {filtered.length === 1 ? "Table" : "Tables"}
                     {filter !== "all" && <span className="ml-1 text-orange-500">· {filter}</span>}
@@ -105,7 +105,7 @@ const TableGrid = ({ filter, onEditTable, onViewQR }) => {
                                     index={i}
                                     table={table}
                                     onEditTable={onEditTable}
-                                    onViewQR={onViewQR}
+                                    onDownloadQR={onDownloadQR}
                                     onDeleteTable={handleDeleteClick}
                                 />
                             ))
@@ -114,7 +114,7 @@ const TableGrid = ({ filter, onEditTable, onViewQR }) => {
                 </table>
             </div>
 
-            <div className="flex flex-col gap-4 p-4 md:hidden">
+            <div className="flex flex-col gap-4 md:hidden">
                 {!filtered.length ? (
                     <div className="flex flex-col items-center justify-center py-10 text-center">
                         <div className="w-12 h-12 rounded-2xl bg-orange-50 dark:bg-orange-950 flex items-center justify-center mb-3 border border-orange-100 dark:border-orange-900">
@@ -129,7 +129,7 @@ const TableGrid = ({ filter, onEditTable, onViewQR }) => {
                             index={i}
                             table={table}
                             onEditTable={onEditTable}
-                            onViewQR={onViewQR}
+                            onDownloadQR={onDownloadQR}
                             onDeleteTable={handleDeleteClick}
                         />
                     ))
@@ -137,7 +137,7 @@ const TableGrid = ({ filter, onEditTable, onViewQR }) => {
             </div>
             
             {filtered.length > 0 && (
-                <div className="px-5 py-3 border-t border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-800/30">
+                <div className="px-1 md:px-5 py-3 md:border-t md:border-gray-100 md:dark:border-zinc-800 md:bg-gray-50/50 md:dark:bg-zinc-800/30">
                     <p className="text-[11px] text-gray-400 dark:text-zinc-500">
                         Showing <span className="font-semibold text-gray-600 dark:text-gray-300">{filtered.length}</span> of{" "}
                         <span className="font-semibold text-gray-600 dark:text-gray-300">{tables.length}</span> tables

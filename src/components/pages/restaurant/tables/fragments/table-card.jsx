@@ -1,8 +1,8 @@
 "use client";
-import { QrCode, Pencil, Trash2, Users, MapPin, Hash } from "lucide-react";
+import { QrCode, Pencil, Trash2, Users, MapPin, Hash, Download } from "lucide-react";
 import { StatusBadge } from "./table-row";
 
-export const TableCard = ({ table, index, onEditTable, onViewQR, onDeleteTable }) => (
+export const TableCard = ({ table, index, onEditTable, onDownloadQR, onDeleteTable }) => (
     <div className="bg-white dark:bg-zinc-950/50 border border-gray-100 dark:border-zinc-800/80 rounded-xl p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow">
         
         <div className="flex items-center justify-between border-b border-gray-50 dark:border-zinc-900 pb-3">
@@ -60,11 +60,11 @@ export const TableCard = ({ table, index, onEditTable, onViewQR, onDeleteTable }
 
         <div className="flex items-center gap-2 pt-1 mt-1 border-t border-gray-50 dark:border-zinc-900">
             <button
-                onClick={() => onViewQR(table)}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900 transition-colors"
+                onClick={() => onDownloadQR(table)}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-bold bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 shadow-md hover:shadow-lg transition-all active:scale-[0.98]"
             >
-                <QrCode size={16} />
-                View QR
+                <Download size={16} />
+                Download QR
             </button>
             <button
                 onClick={() => onEditTable(table)}

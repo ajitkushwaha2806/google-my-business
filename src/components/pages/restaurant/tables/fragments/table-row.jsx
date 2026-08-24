@@ -1,6 +1,6 @@
 "use client";
-import { QrCode, Pencil, Trash2, Users, Hash, MapPin } from "lucide-react";
 import { TABLE_STATUS_CONFIG } from "../helpers/constants";
+import { Pencil, Trash2, Users, Hash, MapPin, Download } from "lucide-react";
 
 export const StatusBadge = ({ status }) => {
     const cfg = TABLE_STATUS_CONFIG[status] || TABLE_STATUS_CONFIG.unavailable;
@@ -12,7 +12,7 @@ export const StatusBadge = ({ status }) => {
     );
 };
 
-export const TableRow = ({ table, index, onEditTable, onViewQR, onDeleteTable }) => (
+export const TableRow = ({ table, index, onEditTable, onDownloadQR, onDeleteTable }) => (
     <tr className="group border-b border-gray-100 dark:border-zinc-800 hover:bg-orange-50/40 dark:hover:bg-zinc-800/60 transition-colors duration-100">
         <td className="px-4 py-3.5 text-xs text-gray-400 dark:text-zinc-500 font-mono w-10">
             {String(index + 1).padStart(2, "0")}
@@ -68,12 +68,12 @@ export const TableRow = ({ table, index, onEditTable, onViewQR, onDeleteTable })
         <td className="px-4 py-3.5">
             <div className="flex items-center gap-1">
                 <button
-                    onClick={() => onViewQR(table)}
-                    title="View QR Code"
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900 border border-orange-200 dark:border-orange-800 transition-colors"
+                    onClick={() => onDownloadQR(table)}
+                    title="Download QR Code"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 shadow-sm hover:shadow transition-all active:scale-[0.98]"
                 >
-                    <QrCode size={13} />
-                    QR
+                    <Download size={13} />
+                    Download
                 </button>
                 <button
                     onClick={() => onEditTable(table)}
