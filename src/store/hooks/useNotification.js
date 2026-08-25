@@ -1,10 +1,6 @@
 import { useCallback } from "react";
 import { useDispatch } from "react-redux";
-
-import {
-    hideNotification,
-    showNotification,
-} from "@/store/slice/notificationSlice";
+import { hideNotification, showNotification } from "@/store/slice/notificationSlice";
 
 export default function useNotification() {
     const dispatch = useDispatch();
