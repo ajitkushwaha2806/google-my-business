@@ -11,8 +11,9 @@ export const GET = async (req, { params }) => {
         const isVeg = searchParams.get("is_veg") === "true";
         const page = parseInt(searchParams.get("page")) || 1;
         const limit = parseInt(searchParams.get("limit")) || 10;
+        const categoryId = searchParams.get("categoryId") || "";
 
-        const cacheKey = `restaurant:search:${slug}:${query}:${isVeg}:${page}:${limit}`;
+        const cacheKey = `restaurant:search:${slug}:${query}:${isVeg}:${page}:${limit}:${categoryId}`;
 
         const cachedData = await getCache(cacheKey);
         if (cachedData) {
@@ -25,18 +26,21 @@ export const GET = async (req, { params }) => {
                     search: query,
                     extraFilters: { is_veg: isVeg }
                 },
-                "Menu items fetched successfully (cached)"
+                "Menu items fetched successfully (cached)",
+                { addonGroups: cachedData.addonGroups }
             );
         }
 
-        const { items, totalResults } = await MenuSearchService.search(slug, {
+        const { items, totalResults, addonGroups } = await MenuSearchService.search(slug, {
             query,
             isVeg,
             page,
-            limit
+            limit,
+            categoryId
         });
 
-        await setCache(cacheKey, { items, totalResults }, 180);
+        console.log("addonGroups" , addonGroups)
+        await setCache(cacheKey, { items, totalResults, addonGroups }, 180);
         return JsonResponse.collection(
             items,
             totalResults,
@@ -44,9 +48,10 @@ export const GET = async (req, { params }) => {
                 page,
                 limit,
                 search: query,
-                extraFilters: { is_veg: isVeg }
+                extraFilters: { is_veg: isVeg, ...(categoryId && { categoryId }) }
             },
-            "Menu items fetched successfully"
+            "Menu items fetched successfully",
+            { addonGroups }
         );
     } catch (err) {
         console.error("GET menu search error:", err);

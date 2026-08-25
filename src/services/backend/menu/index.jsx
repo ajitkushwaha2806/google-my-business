@@ -1,3 +1,5 @@
+import "@/models/AddonGroup";
+import mongoose from "mongoose";
 import MenuItem from "@/models/Item";
 import ImageAsset from "@/models/Image";
 import Category from "@/models/Category";
@@ -46,6 +48,14 @@ export const MenuService = {
       return acc;
     }, {});
 
-    return { items: groupedItems };
+    const addonGroupIds = [...new Set(items.flatMap(item => item.addonGroups || []).map(id => id.toString()))];
+    const addonGroups = await mongoose.models.AddonGroup.find({ _id: { $in: addonGroupIds } })
+        .populate({
+            path: 'items.item',
+            select: 'name base_price image variants dietaryType isAvailable'
+        })
+        .lean();
+
+    return { items: groupedItems, addonGroups };
   }
 };

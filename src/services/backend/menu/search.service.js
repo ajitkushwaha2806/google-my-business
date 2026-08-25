@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import dbConnect from "@/lib/db";
 import MenuItem from "@/models/Item";
 import ImageAsset from "@/models/Image";
@@ -5,7 +6,7 @@ import Category from "@/models/Category";
 import { getRestaurantFromSlug } from "@/lib/api/hooks/getRestaurant";
 
 export class MenuSearchService {
-    static async search(slug, { query = "", isVeg = false, page = 1, limit = 10 }) {
+    static async search(slug, { query = "", isVeg = false, page = 1, limit = 10, categoryId = "" }) {
         await dbConnect();
 
         const { restaurant, error } = await getRestaurantFromSlug(slug);
@@ -60,6 +61,15 @@ export class MenuSearchService {
                 searchStage
             ];
 
+            if (categoryId) {
+                searchStage.$search.compound.filter.push({
+                    equals: {
+                        value: new mongoose.Types.ObjectId(categoryId),
+                        path: "category"
+                    }
+                });
+            }
+
             if (isVegFilter) {
                 pipeline.push({
                     $match: {
@@ -113,8 +123,9 @@ export class MenuSearchService {
             })
 
 
+            let aggregationResults;
             try {
-                const aggregationResults = await MenuItem.aggregate(pipeline);
+                aggregationResults = await MenuItem.aggregate(pipeline);
                 const facetResult = aggregationResults[0];
 
                 items = facetResult?.results || [];
@@ -133,6 +144,10 @@ export class MenuSearchService {
 
                 if (isVegFilter) {
                     fallbackFilter.dietaryType = { $in: ["veg", "vegan"] };
+                }
+
+                if (categoryId) {
+                    fallbackFilter.category = categoryId;
                 }
 
                 totalResults = await MenuItem.countDocuments(fallbackFilter);
@@ -155,6 +170,10 @@ export class MenuSearchService {
                 filter.dietaryType = { $in: ["veg", "vegan"] };
             }
 
+            if (categoryId) {
+                filter.category = categoryId;
+            }
+
             totalResults = await MenuItem.countDocuments(filter);
             items = await MenuItem.find(filter)
                 .populate("category", "name")
@@ -166,9 +185,18 @@ export class MenuSearchService {
                 .lean();
         }
 
+        const addonGroupIds = [...new Set(items.flatMap(item => item.addonGroups || []).map(id => id.toString()))];
+        const addonGroups = await mongoose.models.AddonGroup.find({ _id: { $in: addonGroupIds } })
+            .populate({
+                path: 'items.item',
+                select: 'name base_price image variants dietaryType isAvailable'
+            })
+            .lean();
+
         return {
             items,
-            totalResults
+            totalResults,
+            addonGroups
         };
     }
 }

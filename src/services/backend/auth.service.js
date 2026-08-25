@@ -1,3 +1,4 @@
+import "@/models/Image";
 import jwt from "jsonwebtoken";
 import * as argon2 from "argon2";
 import dbConnect from "@/lib/db";

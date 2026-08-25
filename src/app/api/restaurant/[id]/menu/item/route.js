@@ -1,3 +1,4 @@
+import "@/models/AddonGroup";
 import dbConnect from "@/lib/db";
 import MenuItem from "@/models/Item";
 import ImageAsset from "@/models/Image";
@@ -54,7 +55,16 @@ export const GET = async (req, { params }) => {
         let items = await getCache(cacheKey);
 
         if (!items) {
-            items = await MenuItem.find({ restaurant: id }).populate("image").sort({ displayOrder: 1, createdAt: -1 });
+            items = await MenuItem.find({ restaurant: id })
+                .populate("image")
+                .populate({
+                    path: 'addonGroups',
+                    populate: {
+                        path: 'items.item',
+                        select: 'name base_price image variants dietaryType isAvailable'
+                    }
+                })
+                .sort({ displayOrder: 1, createdAt: -1 });
             await setCache(cacheKey, items);
         }
 
@@ -134,7 +144,15 @@ export const POST = async (req, { params }) => {
         };
 
         const newItem = await MenuItem.create(newItemData);
-        const populatedItem = await MenuItem.findById(newItem._id).populate("image");
+        const populatedItem = await MenuItem.findById(newItem._id)
+            .populate("image")
+            .populate({
+                path: 'addonGroups',
+                populate: {
+                    path: 'items.item',
+                    select: 'name base_price image variants dietaryType isAvailable'
+                }
+            });
         
         await invalidateItemCache(id);
         return JsonResponse.success(populatedItem, "Item created successfully", 201);
@@ -197,7 +215,15 @@ export const PUT = async (req, { params }) => {
             { _id: itemId, restaurant: id },
             { $set: data },
             { new: true, runValidators: true }
-        ).populate("image");
+        )
+        .populate("image")
+        .populate({
+            path: 'addonGroups',
+            populate: {
+                path: 'items.item',
+                select: 'name base_price image variants dietaryType isAvailable'
+            }
+        });
 
         if (!updatedItem) {
             return JsonResponse.error("Item not found", 404);

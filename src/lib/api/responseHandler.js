@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
 
 export class JsonResponse {
-  static success(data, message = "Success", status = 200) {
+  static success(data, message = "Success", status = 200, extraData = {}) {
     const body = {
       success: true,
       message,
       data,
+      ...extraData,
     };
     return NextResponse.json(body, { status });
   }
 
-  static collection(data, totalCount, options, message = "Success") {
+  static collection(data, totalCount, options, message = "Success", extraData = {}) {
     const { page, limit, search, extraFilters } = options;
     const totalPages = Math.ceil(totalCount / limit);
 
@@ -28,6 +29,7 @@ export class JsonResponse {
       message,
       data,
       meta,
+      ...extraData,
     };
 
     return NextResponse.json(body, { status: 200 });
